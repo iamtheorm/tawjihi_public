@@ -1,6 +1,6 @@
 # Tawjihi AI
 
-Tawjihi AI is a cutting-edge banking and finance platform designed to empower marketing and sales teams with AI-driven insights and tools. This project focuses on enhancing product recommendations, customer profiling, and feedback analysis to drive better decision-making and improve customer engagement.
+Tawjihi AI is a cutting-edge banking and finance platform designed to empower - marketing and sales teams with AI-driven insights and tools. This project focuses on enhancing product recommendations, customer profiling, and feedback analysis to drive better decision-making and improve customer engagement.
 
 ## Features
 

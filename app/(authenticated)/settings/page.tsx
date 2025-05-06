@@ -426,10 +426,9 @@ export default function SettingsPage() {
                       <SelectValue placeholder="Select refresh cycle" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="6">Every 6 hours</SelectItem>
+                      
                       <SelectItem value="12">Every 12 hours</SelectItem>
-                      <SelectItem value="24">Every 24 hours</SelectItem>
-                      <SelectItem value="48">Every 48 hours</SelectItem>
+                      
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
@@ -641,7 +640,7 @@ export default function SettingsPage() {
             <CardContent className="space-y-6">
               <div className="rounded-lg border p-4">
                 <div className="mb-4 flex items-center justify-between">
-                  <div className="font-medium">Asalah Credit Card Campaign</div>
+                  <div className="font-medium">Al Jawhar Credit Card Campaign</div>
                   <Badge>Active</Badge>
                 </div>
                 <div className="grid gap-4 md:grid-cols-3">

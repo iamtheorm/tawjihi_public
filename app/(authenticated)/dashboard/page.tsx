@@ -31,7 +31,7 @@ const conversionRateData = [
 const topRecommendations = [
   {
     id: 1,
-    product: "Asalah Credit Card",
+    product: "Al Jawhar Credit Card",
     segment: "High Net Worth",
     conversion: "48%",
     potential: "High",

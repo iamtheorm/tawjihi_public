@@ -91,7 +91,7 @@ const productPerformanceData = [
 
 export default function AnalyticsPage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="page-title">Analytics Dashboard</h1>
@@ -129,7 +129,7 @@ export default function AnalyticsPage() {
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-3">
-            <Card className="stat-card">
+            <Card className="stat-card"> 
               <div className="flex items-start justify-between">
                 <div>
                   <p className="stat-title">Total Customers</p>
@@ -264,10 +264,10 @@ export default function AnalyticsPage() {
     </ChartContainer>
   </CardContent>
 </Card>
+
 </div>
-
           
-
+          
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
@@ -333,8 +333,9 @@ export default function AnalyticsPage() {
             </Card>
           </div>
         </TabsContent>
+
 <TabsContent value="customers" className="space-y-6">
-  <Card>
+  <Card className="w-[700px]">
     <CardHeader>
       <CardTitle>Customer Growth Trend</CardTitle>
       <CardDescription>Monthly customer acquisition and retention</CardDescription>
@@ -362,7 +363,7 @@ export default function AnalyticsPage() {
 
 
     <TabsContent value="products" className="space-y-6">
-  <Card className="w-[1000px]">
+  <Card className="w-[700px]">
     <CardHeader>
       <CardTitle>Product Performance</CardTitle>
       <CardDescription>Performance metrics by product category</CardDescription>
@@ -397,7 +398,7 @@ export default function AnalyticsPage() {
 
 
         <TabsContent value="regions" className="space-y-6">
-          <Card>
+          <Card className="w-[700px]">
             <CardHeader>
               <CardTitle>Regional Performance</CardTitle>
               <CardDescription>Key metrics by region</CardDescription>

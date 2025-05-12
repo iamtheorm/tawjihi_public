@@ -123,7 +123,7 @@ const COLORS = ["#2fb3b6", "#36b9c8", "#4dc4d8", "#65cfe8", "#7edaf8"]
 
 export default function CustomerProfilePage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="page-title">Customer Profile</h1>

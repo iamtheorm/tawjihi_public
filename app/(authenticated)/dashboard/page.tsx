@@ -82,7 +82,7 @@ const alerts = [
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div className="flex items-center justify-between">
         <h1 className="page-title">Dashboard Overview</h1>
         <Button className="bg-banking-500 hover:bg-banking-600">Export Overview</Button>

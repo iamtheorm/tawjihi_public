@@ -131,7 +131,7 @@ const recentReports = [
 
 export default function ReportsPage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="page-title">Reports & Export</h1>

@@ -124,7 +124,7 @@ const activityLogs = [
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div>
         <h1 className="page-title">Admin Settings</h1>
         <p className="page-description">

@@ -113,7 +113,7 @@ const modelUpdates = [
 
 export default function FeedbackPage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="page-title">AI Feedback & Learning</h1>
@@ -178,7 +178,7 @@ export default function FeedbackPage() {
         </Card>
       </div>
 
-      <Tabs defaultValue="performance" className="space-y-6">
+      <Tabs defaultValue="performance" className="space-y-6 mt-6">
         <TabsList>
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="feedback">Recent Feedback</TabsTrigger>

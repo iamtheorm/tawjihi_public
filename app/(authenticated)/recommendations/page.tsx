@@ -81,7 +81,7 @@ const recommendations = [
 
 export default function RecommendationsPage() {
   return (
-    <div className="space-y-6">
+    <div className="w-[1400px]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="page-title">Product Recommendations</h1>
@@ -140,7 +140,7 @@ export default function RecommendationsPage() {
         </Card>
       </div>
 
-      <Tabs defaultValue="list" className="space-y-4">
+      <Tabs defaultValue="list" className="space-y-4 mt-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <TabsList>
             <TabsTrigger value="list">List View</TabsTrigger>

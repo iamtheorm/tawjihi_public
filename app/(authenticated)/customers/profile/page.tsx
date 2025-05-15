@@ -123,10 +123,10 @@ const COLORS = ["#2fb3b6", "#36b9c8", "#4dc4d8", "#65cfe8", "#7edaf8"]
 
 export default function CustomerProfilePage() {
   return (
-    <div className="w-[1400px]">
+    <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="page-title">Customer Profile</h1>
+          <h1 className="text-2xl font-bold">Customer Profile</h1>
           <div className="flex items-center text-sm text-muted-foreground">
             <span>Dashboard</span>
             <ChevronRight className="mx-1 h-4 w-4" />
@@ -147,8 +147,8 @@ export default function CustomerProfilePage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1">
+      <div className="grid gap-6 lg:grid-cols-3 mt-6">
+        <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center gap-4">
             <Avatar className="h-16 w-16">
               <AvatarFallback className="text-2xl bg-banking-100 text-banking-700">AF</AvatarFallback>
@@ -241,12 +241,12 @@ export default function CustomerProfilePage() {
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
+        <Card className="lg:col-span-2">
           <Tabs defaultValue="transactions" className="h-full">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle>Customer Insights</CardTitle>
-                <TabsList>
+                <TabsList className="w-full sm:w-auto">
                   <TabsTrigger value="transactions">Transactions</TabsTrigger>
                   <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
                   <TabsTrigger value="interactions">Interactions</TabsTrigger>
@@ -267,7 +267,7 @@ export default function CustomerProfilePage() {
                       color: "hsl(var(--success))",
                     },
                   }}
-                  className="h-80"
+                  className="h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={transactionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -298,16 +298,16 @@ export default function CustomerProfilePage() {
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
                     <div className="mb-4 text-sm font-medium">Spending by Category</div>
-                    <div className="h-60">
+                    <div className="h-[250px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
+                        <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
                           <Pie
                             data={spendingCategories}
                             cx="50%"
                             cy="50%"
                             labelLine={false}
                             label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={80}
+                            outerRadius={70}
                             fill="#8884d8"
                             dataKey="value"
                           >

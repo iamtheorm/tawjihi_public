@@ -85,7 +85,7 @@ export function SidebarNav() {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="ml-2 mt-2">
         <SidebarMenu>
           {navItems.map((item) => (
             <SidebarMenuItem key={item.href}>

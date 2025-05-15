@@ -119,8 +119,8 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="w-[1400px]">
-      <div className="flex items-center justify-between">
+    <div className="w-full max-w-full px-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="page-title">Customer Management</h1>
         <div className="flex items-center gap-2">
           <Button variant="outline">
@@ -134,7 +134,7 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -224,7 +224,7 @@ export default function CustomersPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className="rounded-md border overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

@@ -131,11 +131,11 @@ const recentReports = [
 
 export default function ReportsPage() {
   return (
-    <div className="w-[1400px]">
+    <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="page-title">Reports & Export</h1>
-          <p className="page-description">Generate and export reports and analytics</p>
+          <h1 className="text-2xl font-bold">Reports & Export</h1>
+          <p className="text-sm text-muted-foreground">Generate and export reports and analytics</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
@@ -149,62 +149,68 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="dashboard" className="space-y-6">
-        <TabsList>
+      <Tabs defaultValue="dashboard" className="space-y-6 mt-6">
+        <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="saved">Saved Reports</TabsTrigger>
           <TabsTrigger value="team">Team Performance</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="stat-card">
-              <div className="flex items-start justify-between">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <div className="flex items-start justify-between p-6">
                 <div>
-                  <p className="stat-title">Recommendations</p>
-                  <p className="stat-value">1,550</p>
+                  <p className="text-sm font-medium text-muted-foreground">Recommendations</p>
+                  <p className="text-2xl font-bold">1,550</p>
                 </div>
                 <div className="rounded-full bg-primary/10 p-2 text-primary">
                   <CreditCard className="h-6 w-6" />
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-success">
-                <span>Generated this month</span>
+              <div className="px-6 pb-4">
+                <div className="flex items-center gap-1 text-sm text-success">
+                  <span>Generated this month</span>
+                </div>
               </div>
             </Card>
 
-            <Card className="stat-card">
-              <div className="flex items-start justify-between">
+            <Card>
+              <div className="flex items-start justify-between p-6">
                 <div>
-                  <p className="stat-title">Conversions</p>
-                  <p className="stat-value">698</p>
+                  <p className="text-sm font-medium text-muted-foreground">Conversions</p>
+                  <p className="text-2xl font-bold">698</p>
                 </div>
                 <div className="rounded-full bg-primary/10 p-2 text-primary">
                   <Check className="h-6 w-6" />
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-success">
-                <span>45% conversion rate</span>
+              <div className="px-6 pb-4">
+                <div className="flex items-center gap-1 text-sm text-success">
+                  <span>45% conversion rate</span>
+                </div>
               </div>
             </Card>
 
-            <Card className="stat-card">
-              <div className="flex items-start justify-between">
+            <Card>
+              <div className="flex items-start justify-between p-6">
                 <div>
-                  <p className="stat-title">Revenue Impact</p>
-                  <p className="stat-value">OMR 1.2M</p>
+                  <p className="text-sm font-medium text-muted-foreground">Revenue Impact</p>
+                  <p className="text-2xl font-bold">OMR 1.2M</p>
                 </div>
                 <div className="rounded-full bg-primary/10 p-2 text-primary">
                   <RefreshCw className="h-6 w-6" />
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-success">
-                <span>Estimated from conversions</span>
+              <div className="px-6 pb-4">
+                <div className="flex items-center gap-1 text-sm text-success">
+                  <span>Estimated from conversions</span>
+                </div>
               </div>
             </Card>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Conversion Rate Trend</CardTitle>
@@ -218,10 +224,10 @@ export default function ReportsPage() {
                       color: "hsl(var(--primary))",
                     },
                   }}
-                  className="h-80"
+                  className="h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={conversionData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <AreaChart data={conversionData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis domain={[0, 60]} />
@@ -245,7 +251,7 @@ export default function ReportsPage() {
                 <CardDescription>Recommendations by product type</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -254,7 +260,7 @@ export default function ReportsPage() {
                         cy="50%"
                         labelLine={false}
                         label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
+                        outerRadius={70}
                         fill="#8884d8"
                         dataKey="value"
                       >
@@ -296,7 +302,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                   <div className="flex-1">
                     <Select defaultValue="monthly">
                       <SelectTrigger>
@@ -368,41 +374,43 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent>
               <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Report Name</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Generated</TableHead>
-                      <TableHead>Format</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentReports.map((report) => (
-                      <TableRow key={report.id}>
-                        <TableCell>
-                          <div className="font-medium">{report.name}</div>
-                        </TableCell>
-                        <TableCell>{report.type}</TableCell>
-                        <TableCell>{report.generated}</TableCell>
-                        <TableCell>
-                          <Badge variant={report.format === "PDF" ? "default" : "secondary"}>{report.format}</Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button size="sm" variant="ghost">
-                              <Share className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="ghost">
-                              <Download className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Report Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Generated</TableHead>
+                        <TableHead>Format</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {recentReports.map((report) => (
+                        <TableRow key={report.id}>
+                          <TableCell>
+                            <div className="font-medium">{report.name}</div>
+                          </TableCell>
+                          <TableCell>{report.type}</TableCell>
+                          <TableCell>{report.generated}</TableCell>
+                          <TableCell>
+                            <Badge variant={report.format === "PDF" ? "default" : "secondary"}>{report.format}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button size="sm" variant="ghost">
+                                <Share className="h-4 w-4" />
+                              </Button>
+                              <Button size="sm" variant="ghost">
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
             <CardFooter className="flex items-center justify-between border-t p-4">
@@ -500,10 +508,10 @@ export default function ReportsPage() {
                     color: "hsl(var(--success))",
                   },
                 }}
-                className="h-80"
+                className="h-[300px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={teamPerformanceData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <BarChart data={teamPerformanceData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
@@ -519,55 +527,57 @@ export default function ReportsPage() {
               <div className="space-y-4">
                 <div className="text-sm font-medium">Team Performance Breakdown</div>
                 <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Team</TableHead>
-                        <TableHead>Recommendations</TableHead>
-                        <TableHead>Conversions</TableHead>
-                        <TableHead>Rate</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {teamPerformanceData.map((team) => (
-                        <TableRow key={team.name}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar>
-                                <AvatarFallback>{team.name.split(" ")[1]}</AvatarFallback>
-                              </Avatar>
-                              <div className="font-medium">{team.name}</div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{team.recommendations}</TableCell>
-                          <TableCell>{team.conversions}</TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={
-                                team.conversionRate > 55
-                                  ? "default"
-                                  : team.conversionRate > 45
-                                    ? "secondary"
-                                    : "outline"
-                              }
-                            >
-                              {team.conversionRate}%
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button size="sm" variant="outline">
-                              View Details
-                            </Button>
-                          </TableCell>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Team</TableHead>
+                          <TableHead>Recommendations</TableHead>
+                          <TableHead>Conversions</TableHead>
+                          <TableHead>Rate</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {teamPerformanceData.map((team) => (
+                          <TableRow key={team.name}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar>
+                                  <AvatarFallback>{team.name.split(" ")[1]}</AvatarFallback>
+                                </Avatar>
+                                <div className="font-medium">{team.name}</div>
+                              </div>
+                            </TableCell>
+                            <TableCell>{team.recommendations}</TableCell>
+                            <TableCell>{team.conversions}</TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  team.conversionRate > 55
+                                    ? "default"
+                                    : team.conversionRate > 45
+                                      ? "secondary"
+                                      : "outline"
+                                }
+                              >
+                                {team.conversionRate}%
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button size="sm" variant="outline">
+                                View Details
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between">
+            <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
               <Button variant="outline">
                 <UserCircle className="mr-2 h-4 w-4" />
                 Team Members

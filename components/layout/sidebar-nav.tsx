@@ -97,7 +97,7 @@ export function SidebarNav() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-        </SidebarMenu>
+        </SidebarMenu> 
       </SidebarContent>
 
       <SidebarFooter>

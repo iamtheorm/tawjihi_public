@@ -6,6 +6,10 @@ import { AlertTriangle, ArrowUp, ArrowUpRight, DollarSign, TrendingUp, Users } f
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import Cookies from 'js-cookie'
+import { useState } from "react"
 
 // Sample data for charts and metrics
 const customerActivityData = [
@@ -81,11 +85,44 @@ const alerts = [
 ]
 
 export default function DashboardPage() {
+  const router = useRouter()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      
+      // Remove the token cookie with the same options it was set with
+      Cookies.remove('token', {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+      
+      // Show success message
+      toast.success('Logged out successfully')
+      
+      // Redirect to login page
+      router.push('/')
+    } catch (error) {
+      toast.error('Failed to logout. Please try again.')
+      console.error('Logout error:', error)
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
     <div className="w-[1400px]">
       <div className="flex items-center justify-between">
         <h1 className="page-title">Dashboard Overview</h1>
-        <Button className="bg-banking-500 hover:bg-banking-600">Export Overview</Button>
+        <Button 
+          variant="outline" 
+          onClick={handleLogout}
+          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
       </div>
 
       {/* KPI Stats */}

@@ -91,11 +91,11 @@ const productPerformanceData = [
 
 export default function AnalyticsPage() {
   return (
-    <div className="w-[1400px]">
+    <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="page-title">Analytics Dashboard</h1>
-          <p className="page-description">Comprehensive analytics and performance metrics</p>
+          <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Comprehensive analytics and performance metrics</p>
         </div>
         <div className="flex items-center gap-2">
           <Select defaultValue="2023">
@@ -119,8 +119,8 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
+      <Tabs defaultValue="overview" className="space-y-6 mt-6">
+        <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="customers">Customers</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
@@ -128,154 +128,159 @@ export default function AnalyticsPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="stat-card"> 
-              <div className="flex items-start justify-between">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <div className="flex items-start justify-between p-6">
                 <div>
-                  <p className="stat-title">Total Customers</p>
-                  <p className="stat-value">6,080</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
+                  <p className="text-2xl font-bold">6,080</p>
                 </div>
                 <div className="rounded-full bg-banking-100 p-2 text-banking-500">
                   <TrendingUp className="h-6 w-6" />
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-success">
-                <span>↑ 8.5% from last month</span>
+              <div className="px-6 pb-4">
+                <div className="flex items-center gap-1 text-sm text-success">
+                  <span>↑ 8.5% from last month</span>
+                </div>
               </div>
             </Card>
 
-            <Card className="stat-card">
-              <div className="flex items-start justify-between">
+            <Card>
+              <div className="flex items-start justify-between p-6">
                 <div>
-                  <p className="stat-title">Total Assets</p>
-                  <p className="stat-value">245M OMR</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Assets</p>
+                  <p className="text-2xl font-bold">245M OMR</p>
                 </div>
                 <div className="rounded-full bg-banking-100 p-2 text-banking-500">
                   <BarChart3 className="h-6 w-6" />
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-success">
-                <span>↑ 12.3% from last quarter</span>
+              <div className="px-6 pb-4">
+                <div className="flex items-center gap-1 text-sm text-success">
+                  <span>↑ 12.3% from last quarter</span>
+                </div>
               </div>
             </Card>
 
-            <Card className="stat-card">
-              <div className="flex items-start justify-between">
+            <Card>
+              <div className="flex items-start justify-between p-6">
                 <div>
-                  <p className="stat-title">Net Cash Flow</p>
-                  <p className="stat-value">3.6M OMR</p>
+                  <p className="text-sm font-medium text-muted-foreground">Net Cash Flow</p>
+                  <p className="text-2xl font-bold">3.6M OMR</p>
                 </div>
                 <div className="rounded-full bg-banking-100 p-2 text-banking-500">
                   <PieChartIcon className="h-6 w-6" />
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-sm text-success">
-                <span>↑ 5.2% from last month</span>
+              <div className="px-6 pb-4">
+                <div className="flex items-center gap-1 text-sm text-success">
+                  <span>↑ 5.2% from last month</span>
+                </div>
               </div>
             </Card>
           </div>
 
-  <div style={{ display: 'flex', width: '100%', gap: '2rem' }}>
-  <Card style={{ width: '50%' }}>
-    <CardHeader>
-      <CardTitle>Monthly Financial Trends</CardTitle>
-      <CardDescription>Deposits, withdrawals, and net cash flow</CardDescription>
-    </CardHeader>
-    <CardContent style={{ display: 'flex', alignItems: 'center' }}>
-      <ChartContainer
-        config={{
-          deposits: {
-            label: "Deposits",
-            color: "#2fb3b6",
-          },
-          withdrawals: {
-            label: "Withdrawals",
-            color: "#ff9580",
-          },
-          netFlow: {
-            label: "Net Flow",
-            color: "#8884d8",
-          },
-        }}
-        className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={monthlyTrendsData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <ChartTooltip content={<ChartTooltipContent />} />
-            <Area
-              type="monotone"
-              dataKey="deposits"
-              stroke="var(--color-deposits)"
-              fill="var(--color-deposits)"
-              fillOpacity={0.3}
-            />
-            <Area
-              type="monotone"
-              dataKey="withdrawals"
-              stroke="var(--color-withdrawals)"
-              fill="var(--color-withdrawals)"
-              fillOpacity={0.3}
-            />
-            <Area
-              type="monotone"
-              dataKey="netFlow"
-              stroke="var(--color-netFlow)"
-              fill="var(--color-netFlow)"
-              fillOpacity={0.3}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </ChartContainer>
-    </CardContent>
-  </Card>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Monthly Financial Trends</CardTitle>
+                <CardDescription>Deposits, withdrawals, and net cash flow</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer
+                  config={{
+                    deposits: {
+                      label: "Deposits",
+                      color: "#2fb3b6",
+                    },
+                    withdrawals: {
+                      label: "Withdrawals",
+                      color: "#ff9580",
+                    },
+                    netFlow: {
+                      label: "Net Flow",
+                      color: "#8884d8",
+                    },
+                  }}
+                  className="h-[300px]"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={monthlyTrendsData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Area
+                        type="monotone"
+                        dataKey="deposits"
+                        stroke="var(--color-deposits)"
+                        fill="var(--color-deposits)"
+                        fillOpacity={0.3}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="withdrawals"
+                        stroke="var(--color-withdrawals)"
+                        fill="var(--color-withdrawals)"
+                        fillOpacity={0.3}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="netFlow"
+                        stroke="var(--color-netFlow)"
+                        fill="var(--color-netFlow)"
+                        fillOpacity={0.3}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
 
-  <Card style={{ width: '50%' }}>
-  <CardHeader>
-    <CardTitle>Investment Growth Trend</CardTitle>
-    <CardDescription>Monthly Investment Growth over time</CardDescription>
-  </CardHeader>
-  <CardContent style={{ display: 'flex', alignItems: 'center' }}>
-    <ChartContainer
-      config={{
-        investmentGrowth: {
-          label: "Investment Growth",
-          color: "#82ca9d",
-        },
-      }}
-      className="h-80"
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={monthlyInvestmentGrowthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <Area
-            type="monotone"
-            dataKey="investmentGrowth"
-            stroke="var(--color-investmentGrowth)"
-            fill="var(--color-investmentGrowth)"
-            fillOpacity={0.3}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    </ChartContainer>
-  </CardContent>
-</Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Investment Growth Trend</CardTitle>
+                <CardDescription>Monthly Investment Growth over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer
+                  config={{
+                    investmentGrowth: {
+                      label: "Investment Growth",
+                      color: "#82ca9d",
+                    },
+                  }}
+                  className="h-[300px]"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={monthlyInvestmentGrowthData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Area
+                        type="monotone"
+                        dataKey="investmentGrowth"
+                        stroke="var(--color-investmentGrowth)"
+                        fill="var(--color-investmentGrowth)"
+                        fillOpacity={0.3}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          </div>
 
-</div>
-          
-          
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Customer Segments</CardTitle>
                 <CardDescription>Distribution of customers by segment</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -284,7 +289,7 @@ export default function AnalyticsPage() {
                         cy="50%"
                         labelLine={false}
                         label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
+                        outerRadius={70}
                         fill="#8884d8"
                         dataKey="value"
                       >
@@ -316,10 +321,10 @@ export default function AnalyticsPage() {
                       color: "#8884d8",
                     },
                   }}
-                  className="h-80"
+                  className="h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={productPerformanceData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <BarChart data={productPerformanceData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
                       <YAxis />
@@ -334,71 +339,66 @@ export default function AnalyticsPage() {
           </div>
         </TabsContent>
 
-<TabsContent value="customers" className="space-y-6">
-  <Card className="w-[700px]">
-    <CardHeader>
-      <CardTitle>Customer Growth Trend</CardTitle>
-      <CardDescription>Monthly customer acquisition and retention</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={customerData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="new" stroke="#2fb3b6" name="New Customers" />
-            <Line type="monotone" dataKey="churned" stroke="#ff9580" name="Churned Customers" />
-            <Line type="monotone" dataKey="net" stroke="#8884d8" name="Net Growth" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </CardContent>
-  </Card>
+        <TabsContent value="customers" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Customer Growth Trend</CardTitle>
+              <CardDescription>Monthly customer acquisition and retention</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={customerData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="new" stroke="#2fb3b6" name="New Customers" />
+                    <Line type="monotone" dataKey="churned" stroke="#ff9580" name="Churned Customers" />
+                    <Line type="monotone" dataKey="net" stroke="#8884d8" name="Net Growth" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-
-</TabsContent>
-
-
-    <TabsContent value="products" className="space-y-6">
-  <Card className="w-[700px]">
-    <CardHeader>
-      <CardTitle>Product Performance</CardTitle>
-      <CardDescription>Performance metrics by product category</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="h-80 pt-4"> {/* Added top padding to prevent overlap */}
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={productPerformanceData}
-            margin={{ top: 10, right: 30, left: 0, bottom: 80 }} // increased bottom margin
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="name"
-              interval={0}
-              tick={{ fontSize: 12 }}
-              angle={-30}
-              textAnchor="end"
-            />
-            <YAxis />
-            <Tooltip />
-            <Legend verticalAlign="top" height={36} />
-            <Bar dataKey="current" fill="#2fb3b6" name="Current Performance" />
-            <Bar dataKey="previous" fill="#8884d8" name="Previous Performance" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </CardContent>
-  </Card>
-</TabsContent>
-
-
+        <TabsContent value="products" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Performance</CardTitle>
+              <CardDescription>Performance metrics by product category</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={productPerformanceData}
+                    margin={{ top: 10, right: 30, left: -10, bottom: 80 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      interval={0}
+                      tick={{ fontSize: 12 }}
+                      angle={-30}
+                      textAnchor="end"
+                    />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend verticalAlign="top" height={36} />
+                    <Bar dataKey="current" fill="#2fb3b6" name="Current Performance" />
+                    <Bar dataKey="previous" fill="#8884d8" name="Previous Performance" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="regions" className="space-y-6">
-          <Card className="w-[700px]">
+          <Card>
             <CardHeader>
               <CardTitle>Regional Performance</CardTitle>
               <CardDescription>Key metrics by region</CardDescription>
@@ -419,10 +419,10 @@ export default function AnalyticsPage() {
                     color: "#82ca9d",
                   },
                 }}
-                className="h-80"
+                className="h-[300px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={regionPerformanceData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <BarChart data={regionPerformanceData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="region" />
                     <YAxis yAxisId="left" orientation="left" />

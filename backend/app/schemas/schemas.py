@@ -165,4 +165,25 @@ class CustomerGrowthResponse(CustomerGrowthBase):
     updated_at: Optional[datetime] = None
 
     class Config:
+        from_attributes = True
+
+# Customer Schemas
+class CustomerBase(BaseModel):
+    name: str
+    email: EmailStr
+    account: str
+    segment: Optional[str] = None
+    status: Optional[str] = None
+    recommendation: Optional[str] = None
+    potential: Optional[str] = None
+
+class CustomerCreate(CustomerBase):
+    pass
+
+class Customer(CustomerBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
         from_attributes = True 

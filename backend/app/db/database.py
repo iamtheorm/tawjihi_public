@@ -33,6 +33,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Create Base class
 Base = declarative_base()
 
+# Create all tables
+def init_db():
+    from app.models.models import Customer  # Import here to avoid circular imports
+    Base.metadata.create_all(bind=engine)
+
 # Database dependency
 def get_db():
     db = SessionLocal()

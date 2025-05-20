@@ -2,7 +2,6 @@ from datetime import timedelta
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
@@ -13,7 +12,6 @@ from app.core.security import (
     get_password_hash,
     create_access_token,
     get_current_active_user,
-    get_current_user,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
@@ -37,7 +35,7 @@ async def register_user(
 
     # Create user profile
     new_user = User(
-        account_number="TEMP-123",  # You might want to generate this
+        account_number="TEMP-123",
         industry="Not Set",
         occupation="Not Set",
         organisation="Not Set",

@@ -78,4 +78,91 @@ class UserProfileResponse(UserProfileBase):
     updated_at: Optional[datetime] = None
 
     class Config:
+        from_attributes = True
+
+# Analytics Schemas
+class CustomerSegmentBase(BaseModel):
+    name: str
+    value: int
+
+class CustomerSegmentCreate(CustomerSegmentBase):
+    pass
+
+class CustomerSegmentResponse(CustomerSegmentBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class ProductPerformanceBase(BaseModel):
+    name: str
+    current: int
+    previous: int
+    period: str
+
+class ProductPerformanceCreate(ProductPerformanceBase):
+    pass
+
+class ProductPerformanceResponse(ProductPerformanceBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class RegionalPerformanceBase(BaseModel):
+    region: str
+    customers: int
+    revenue: float
+    growth: float
+    period: str
+
+class RegionalPerformanceCreate(RegionalPerformanceBase):
+    pass
+
+class RegionalPerformanceResponse(RegionalPerformanceBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class MonthlyTrendBase(BaseModel):
+    month: str
+    year: int
+    deposits: float
+    withdrawals: float
+    net_flow: float
+
+class MonthlyTrendCreate(MonthlyTrendBase):
+    pass
+
+class MonthlyTrendResponse(MonthlyTrendBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class CustomerGrowthBase(BaseModel):
+    month: str
+    year: int
+    new_customers: int
+    churned_customers: int
+    net_growth: int
+
+class CustomerGrowthCreate(CustomerGrowthBase):
+    pass
+
+class CustomerGrowthResponse(CustomerGrowthBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
         from_attributes = True 

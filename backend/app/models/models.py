@@ -81,3 +81,60 @@ class Transaction(Base):
 
     # Relationship
     user = relationship("User", back_populates="transactions")
+
+# Analytics Models
+class CustomerSegment(Base):
+    __tablename__ = "customer_segments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    value = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class ProductPerformance(Base):
+    __tablename__ = "product_performance"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    current = Column(Integer, nullable=False)
+    previous = Column(Integer, nullable=False)
+    period = Column(String, nullable=False)  # e.g., "2023-Q2"
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class RegionalPerformance(Base):
+    __tablename__ = "regional_performance"
+
+    id = Column(Integer, primary_key=True, index=True)
+    region = Column(String, nullable=False)
+    customers = Column(Integer, nullable=False)
+    revenue = Column(Numeric(12, 2), nullable=False)
+    growth = Column(Float, nullable=False)
+    period = Column(String, nullable=False)  # e.g., "2023-Q2"
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class MonthlyTrend(Base):
+    __tablename__ = "monthly_trends"
+
+    id = Column(Integer, primary_key=True, index=True)
+    month = Column(String, nullable=False)
+    year = Column(Integer, nullable=False)
+    deposits = Column(Numeric(12, 2), nullable=False)
+    withdrawals = Column(Numeric(12, 2), nullable=False)
+    net_flow = Column(Numeric(12, 2), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class CustomerGrowth(Base):
+    __tablename__ = "customer_growth"
+
+    id = Column(Integer, primary_key=True, index=True)
+    month = Column(String, nullable=False)
+    year = Column(Integer, nullable=False)
+    new_customers = Column(Integer, nullable=False)
+    churned_customers = Column(Integer, nullable=False)
+    net_growth = Column(Integer, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

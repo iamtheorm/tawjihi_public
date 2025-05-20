@@ -82,81 +82,89 @@ const alerts = [
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="page-title">Dashboard Overview</h1>
+    <div className="container mx-auto px-4 py-6 max-w-full">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="text-2xl font-bold">Dashboard Overview</h1>
         <Button className="bg-banking-500 hover:bg-banking-600">Export Overview</Button>
       </div>
 
       {/* KPI Stats */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
         <Card className="stat-card">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Active Customers</p>
-              <p className="stat-value">5,320</p>
+              <p className="text-sm font-medium text-muted-foreground">Active Customers</p>
+              <p className="text-2xl font-bold">5,320</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <Users className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-success">
-            <ArrowUp className="h-4 w-4" />
-            <span>12% from last month</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-success">
+              <ArrowUp className="h-4 w-4" />
+              <span>12% from last month</span>
+            </div>
           </div>
         </Card>
 
         <Card className="stat-card">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Conversion Rate</p>
-              <p className="stat-value">46%</p>
+              <p className="text-sm font-medium text-muted-foreground">Conversion Rate</p>
+              <p className="text-2xl font-bold">46%</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <TrendingUp className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-success">
-            <ArrowUp className="h-4 w-4" />
-            <span>8% increase</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-success">
+              <ArrowUp className="h-4 w-4" />
+              <span>8% increase</span>
+            </div>
           </div>
         </Card>
 
         <Card className="stat-card">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Revenue Impact</p>
-              <p className="stat-value">1.2M OMR</p>
+              <p className="text-sm font-medium text-muted-foreground">Revenue Impact</p>
+              <p className="text-2xl font-bold">1.2M OMR</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <DollarSign className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-success">
-            <ArrowUp className="h-4 w-4" />
-            <span>15% from last quarter</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-success">
+              <ArrowUp className="h-4 w-4" />
+              <span>15% from last quarter</span>
+            </div>
           </div>
         </Card>
 
         <Card className="stat-card">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">High-Value Leads</p>
-              <p className="stat-value">328</p>
+              <p className="text-sm font-medium text-muted-foreground">High-Value Leads</p>
+              <p className="text-2xl font-bold">328</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <ArrowUpRight className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-success">
-            <ArrowUp className="h-4 w-4" />
-            <span>24 new this week</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-success">
+              <ArrowUp className="h-4 w-4" />
+              <span>24 new this week</span>
+            </div>
           </div>
         </Card>
       </div>
 
       {/* Charts */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 mt-6">
         <Card>
           <CardHeader>
             <CardTitle>Customer Activity</CardTitle>
@@ -174,10 +182,10 @@ export default function DashboardPage() {
                   color: "hsl(var(--muted-foreground))",
                 },
               }}
-              className="h-80"
+              className="h-[300px]"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={customerActivityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <AreaChart data={customerActivityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -217,10 +225,10 @@ export default function DashboardPage() {
                   color: "hsl(var(--primary))",
                 },
               }}
-              className="h-80"
+              className="h-[300px]"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={conversionRateData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <BarChart data={conversionRateData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis domain={[0, 60]} />
@@ -234,7 +242,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Alerts and Recommendations */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2 mt-6">
         <Card>
           <CardHeader>
             <CardTitle>Top Recommendations</CardTitle>
@@ -281,11 +289,11 @@ export default function DashboardPage() {
                   >
                     <AlertTriangle className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <div className="font-medium">{alert.title}</div>
                     <div className="text-sm text-muted-foreground">{alert.description}</div>
                   </div>
-                  <Button variant="outline" size="sm" className="ml-auto shrink-0">
+                  <Button variant="outline" size="sm" className="shrink-0">
                     View
                   </Button>
                 </div>

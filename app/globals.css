@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ensure html and body take full viewport */
+html, body, #__next {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fix for absolute positioning context */
+#__next {
+  position: relative;
+}
+
+/* Optional: Smooth transitions for dark mode */
+* {
+  transition: background-color 0.2s ease;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

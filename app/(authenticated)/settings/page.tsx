@@ -124,16 +124,16 @@ const activityLogs = [
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-6 max-w-full">
       <div>
-        <h1 className="page-title">Admin Settings</h1>
-        <p className="page-description">
+        <h1 className="text-2xl font-bold">Admin Settings</h1>
+        <p className="text-sm text-muted-foreground">
           Manage roles, system parameters, and view activity logs
         </p>
       </div>
       
-      <Tabs defaultValue="users" className="space-y-6">
-        <TabsList>
+      <Tabs defaultValue="users" className="space-y-6 mt-6">
+        <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="system">System Parameters</TabsTrigger>
           <TabsTrigger value="campaigns">Campaign Setup</TabsTrigger>
@@ -158,91 +158,93 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Last Active</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar>
-                              <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="font-medium">{user.name}</div>
-                              <div className="text-sm text-muted-foreground">{user.email}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>{user.role}</TableCell>
-                        <TableCell>{user.department}</TableCell>
-                        <TableCell>
-                          <Badge variant={user.status === "active" ? "default" : "secondary"}>
-                            {user.status === "active" ? "Active" : "Inactive"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{user.lastActive}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button size="icon" variant="ghost">
-                                    <UserCog className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Edit User</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button size="icon" variant="ghost">
-                                    <Key className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Reset Password</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button size="icon" variant="ghost">
-                                    {user.status === "active" ? 
-                                      <BellOff className="h-4 w-4" /> : 
-                                      <Bell className="h-4 w-4" />
-                                    }
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{user.status === "active" ? "Deactivate User" : "Activate User"}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Last Active</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar>
+                                <AvatarFallback>{user.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="font-medium">{user.name}</div>
+                                <div className="text-sm text-muted-foreground">{user.email}</div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{user.role}</TableCell>
+                          <TableCell>{user.department}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.status === "active" ? "default" : "secondary"}>
+                              {user.status === "active" ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{user.lastActive}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button size="icon" variant="ghost">
+                                      <UserCog className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Edit User</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button size="icon" variant="ghost">
+                                      <Key className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Reset Password</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button size="icon" variant="ghost">
+                                      {user.status === "active" ? 
+                                        <BellOff className="h-4 w-4" /> : 
+                                        <Bell className="h-4 w-4" />
+                                      }
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{user.status === "active" ? "Deactivate User" : "Activate User"}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
           
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Role Permissions</CardTitle>
@@ -410,7 +412,7 @@ export default function SettingsPage() {
         </TabsContent>
         
         <TabsContent value="system" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>System Parameters</CardTitle>
@@ -426,9 +428,7 @@ export default function SettingsPage() {
                       <SelectValue placeholder="Select refresh cycle" />
                     </SelectTrigger>
                     <SelectContent>
-                      
                       <SelectItem value="12">Every 12 hours</SelectItem>
-                      
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
@@ -643,7 +643,7 @@ export default function SettingsPage() {
                   <div className="font-medium">Al Jawhar Credit Card Campaign</div>
                   <Badge>Active</Badge>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="campaign1-segment">Target Segment</Label>
                     <Select defaultValue="hnw">
@@ -699,7 +699,7 @@ export default function SettingsPage() {
                   <div className="font-medium">Mutual Funds Promotion</div>
                   <Badge variant="outline">Scheduled</Badge>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="campaign2-segment">Target Segment</Label>
                     <Select defaultValue="ma">
@@ -755,7 +755,7 @@ export default function SettingsPage() {
                   <div className="font-medium">Family Protection Insurance</div>
                   <Badge variant="secondary">Draft</Badge>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="campaign3-segment">Target Segment</Label>
                     <Select defaultValue="all">
@@ -826,28 +826,30 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>User</TableHead>
-                      <TableHead>Action</TableHead>
-                      <TableHead>Timestamp</TableHead>
-                      <TableHead>Details</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {activityLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell>
-                          <div className="font-medium">{log.user}</div>
-                        </TableCell>
-                        <TableCell>{log.action}</TableCell>
-                        <TableCell>{log.timestamp}</TableCell>
-                        <TableCell>{log.details}</TableCell>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Timestamp</TableHead>
+                        <TableHead>Details</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {activityLogs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell>
+                            <div className="font-medium">{log.user}</div>
+                          </TableCell>
+                          <TableCell>{log.action}</TableCell>
+                          <TableCell>{log.timestamp}</TableCell>
+                          <TableCell>{log.details}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>

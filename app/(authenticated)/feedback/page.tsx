@@ -113,11 +113,11 @@ const modelUpdates = [
 
 export default function FeedbackPage() {
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="page-title">AI Feedback & Learning</h1>
-          <p className="page-description">Review recommendation performance and AI learning progress</p>
+          <h1 className="text-2xl font-bold">AI Feedback & Learning</h1>
+          <p className="text-sm text-muted-foreground">Review recommendation performance and AI learning progress</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
@@ -131,62 +131,68 @@ export default function FeedbackPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="stat-card">
-          <div className="flex items-start justify-between">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-6">
+        <Card>
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Acceptance Rate</p>
-              <p className="stat-value">72%</p>
+              <p className="text-sm font-medium text-muted-foreground">Acceptance Rate</p>
+              <p className="text-2xl font-bold">72%</p>
             </div>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
               <ThumbsUp className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-success">
-            <span>↑ 4% from last month</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-success">
+              <span>↑ 4% from last month</span>
+            </div>
           </div>
         </Card>
 
-        <Card className="stat-card">
-          <div className="flex items-start justify-between">
+        <Card>
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Model Accuracy</p>
-              <p className="stat-value">90%</p>
+              <p className="text-sm font-medium text-muted-foreground">Model Accuracy</p>
+              <p className="text-2xl font-bold">90%</p>
             </div>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
               <BrainCircuit className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-success">
-            <span>↑ 2% improvement</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-success">
+              <span>↑ 2% improvement</span>
+            </div>
           </div>
         </Card>
 
-        <Card className="stat-card">
-          <div className="flex items-start justify-between">
+        <Card>
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Learning Iterations</p>
-              <p className="stat-value">42</p>
+              <p className="text-sm font-medium text-muted-foreground">Learning Iterations</p>
+              <p className="text-2xl font-bold">42</p>
             </div>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
               <RefreshCw className="h-6 w-6" />
             </div>
           </div>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <span>Last update: 2 days ago</span>
+          <div className="px-6 pb-4">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <span>Last update: 2 days ago</span>
+            </div>
           </div>
         </Card>
       </div>
 
-      <Tabs defaultValue="performance" className="space-y-6">
-        <TabsList>
+      <Tabs defaultValue="performance" className="space-y-6 mt-6">
+        <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="performance">Performance</TabsTrigger>
           <TabsTrigger value="feedback">Recent Feedback</TabsTrigger>
           <TabsTrigger value="model">Model Updates</TabsTrigger>
         </TabsList>
 
         <TabsContent value="performance" className="space-y-6">
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Recommendation Response Trends</CardTitle>
@@ -208,10 +214,10 @@ export default function FeedbackPage() {
                       color: "hsl(var(--muted-foreground))",
                     },
                   }}
-                  className="h-80"
+                  className="h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={feedbackData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <BarChart data={feedbackData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
@@ -238,10 +244,10 @@ export default function FeedbackPage() {
                       color: "hsl(var(--primary))",
                     },
                   }}
-                  className="h-80"
+                  className="h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={accuracyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <LineChart data={accuracyData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis domain={[70, 100]} />
@@ -267,7 +273,7 @@ export default function FeedbackPage() {
               <CardDescription>Acceptance rates across different product types</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Card className="border-2 border-transparent hover:border-primary/50">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">Credit Cards</CardTitle>
@@ -356,7 +362,7 @@ export default function FeedbackPage() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div>
                           <div className="text-sm font-medium">{feedback.customer}</div>
                           <div className="text-xs text-muted-foreground">{feedback.product}</div>
@@ -374,7 +380,7 @@ export default function FeedbackPage() {
                         </Badge>
                       </div>
                       <div className="mt-2 text-sm">{feedback.reason}</div>
-                      <div className="mt-2 flex items-center justify-between">
+                      <div className="mt-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                         <div className="flex items-center">
                           <Avatar className="mr-2 h-6 w-6">
                             <AvatarFallback className="text-xs">
@@ -414,7 +420,7 @@ export default function FeedbackPage() {
               <div className="space-y-6">
                 {modelUpdates.map((update) => (
                   <div key={update.id} className="space-y-2 border-b pb-6 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <div className="rounded-full bg-primary/10 p-1.5 text-primary">
                           <BrainCircuit className="h-4 w-4" />
@@ -437,7 +443,7 @@ export default function FeedbackPage() {
                 ))}
               </div>
             </CardContent>
-            <CardFooter className="flex items-center justify-between">
+            <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-muted-foreground">
                 <span className="font-medium">Current model version:</span> v2.4.5
               </div>
@@ -454,7 +460,7 @@ export default function FeedbackPage() {
               <CardDescription>Model confidence threshold settings for recommendation display</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-lg border p-4">
                   <div className="text-sm font-medium">Premium Products</div>
                   <div className="mt-1 flex items-center justify-between">

@@ -81,11 +81,11 @@ const recommendations = [
 
 export default function RecommendationsPage() {
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="page-title">Product Recommendations</h1>
-          <p className="page-description">View system-wide product suggestions by category or customer segment</p>
+          <h1 className="text-2xl font-bold">Product Recommendations</h1>
+          <p className="text-sm text-muted-foreground">View system-wide product suggestions by category or customer segment</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">
@@ -99,64 +99,64 @@ export default function RecommendationsPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="stat-card">
-          <div className="flex items-start justify-between">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-6">
+        <Card>
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Recommendations</p>
-              <p className="stat-value">2,590</p>
+              <p className="text-sm font-medium text-muted-foreground">Recommendations</p>
+              <p className="text-2xl font-bold">2,590</p>
             </div>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
               <CreditCard className="h-6 w-6" />
             </div>
           </div>
-          <p className="stat-description">Total active recommendations across all customers</p>
+          <p className="px-6 pb-4 text-sm text-muted-foreground">Total active recommendations across all customers</p>
         </Card>
 
-        <Card className="stat-card">
-          <div className="flex items-start justify-between">
+        <Card>
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Average Conversion</p>
-              <p className="stat-value">38%</p>
+              <p className="text-sm font-medium text-muted-foreground">Average Conversion</p>
+              <p className="text-2xl font-bold">38%</p>
             </div>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
               <PieChart className="h-6 w-6" />
             </div>
           </div>
-          <p className="stat-description">Average conversion rate across all products</p>
+          <p className="px-6 pb-4 text-sm text-muted-foreground">Average conversion rate across all products</p>
         </Card>
 
-        <Card className="stat-card">
-          <div className="flex items-start justify-between">
+        <Card>
+          <div className="flex items-start justify-between p-6">
             <div>
-              <p className="stat-title">Top Segment</p>
-              <p className="stat-value">High Net Worth</p>
+              <p className="text-sm font-medium text-muted-foreground">Top Segment</p>
+              <p className="text-2xl font-bold">High Net Worth</p>
             </div>
             <div className="rounded-full bg-primary/10 p-2 text-primary">
               <User className="h-6 w-6" />
             </div>
           </div>
-          <p className="stat-description">Segment with highest recommendation acceptance</p>
+          <p className="px-6 pb-4 text-sm text-muted-foreground">Segment with highest recommendation acceptance</p>
         </Card>
       </div>
 
-      <Tabs defaultValue="list" className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <TabsList>
+      <Tabs defaultValue="list" className="space-y-4 mt-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="list">List View</TabsTrigger>
             <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
             <TabsTrigger value="segment">By Segment</TabsTrigger>
           </TabsList>
-          <div className="mt-4 flex items-center gap-2 sm:mt-0">
+          <div className="flex flex-col sm:flex-row items-center gap-2">
             <div className="relative w-full sm:w-auto">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search recommendations..." className="pl-8 sm:w-[260px]" />
+              <Input type="search" placeholder="Search recommendations..." className="pl-8 w-full sm:w-[260px]" />
             </div>
             <Button variant="outline" size="icon">
               <Filter className="h-4 w-4" />
             </Button>
             <Select defaultValue="all">
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="All Products" />
               </SelectTrigger>
               <SelectContent>
@@ -173,66 +173,68 @@ export default function RecommendationsPage() {
         <TabsContent value="list" className="space-y-4">
           <Card>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium">
-                        Product
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>Segment</TableHead>
-                    <TableHead>Customers</TableHead>
-                    <TableHead>Conversion Rate</TableHead>
-                    <TableHead>Potential</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recommendations.map((rec) => (
-                    <TableRow key={rec.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div className="rounded-full bg-primary/10 p-1.5 text-primary">
-                            <rec.icon className="h-4 w-4" />
-                          </div>
-                          <span className="font-medium">{rec.product}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>{rec.segment}</TableCell>
-                      <TableCell>{rec.customerCount}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={rec.conversionRate} className="h-2 w-[60px]" />
-                          <span>{rec.conversionRate}%</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            rec.potential === "high" ? "default" : rec.potential === "medium" ? "secondary" : "outline"
-                          }
-                        >
-                          {rec.potential}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button size="sm" variant="ghost">
-                            View
-                          </Button>
-                          <Button size="sm">Campaign</Button>
-                        </div>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>
+                        <Button variant="ghost" className="p-0 font-medium">
+                          Product
+                          <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>Segment</TableHead>
+                      <TableHead>Customers</TableHead>
+                      <TableHead>Conversion Rate</TableHead>
+                      <TableHead>Potential</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {recommendations.map((rec) => (
+                      <TableRow key={rec.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="rounded-full bg-primary/10 p-1.5 text-primary">
+                              <rec.icon className="h-4 w-4" />
+                            </div>
+                            <span className="font-medium">{rec.product}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>{rec.segment}</TableCell>
+                        <TableCell>{rec.customerCount}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Progress value={rec.conversionRate} className="h-2 w-[60px]" />
+                            <span>{rec.conversionRate}%</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              rec.potential === "high" ? "default" : rec.potential === "medium" ? "secondary" : "outline"
+                            }
+                          >
+                            {rec.potential}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button size="sm" variant="ghost">
+                              View
+                            </Button>
+                            <Button size="sm">Campaign</Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
 
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-muted-foreground">
               Showing <strong>6</strong> of <strong>24</strong> recommendations
             </div>
@@ -451,7 +453,7 @@ export default function RecommendationsPage() {
         </TabsContent>
 
         <TabsContent value="segment" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle>High Net Worth</CardTitle>

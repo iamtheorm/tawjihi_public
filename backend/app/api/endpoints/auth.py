@@ -1,8 +1,11 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 from app.db.database import get_db
 from app.models.models import Auth, User, EmploymentStatus, MaritalStatus
@@ -14,8 +17,11 @@ from app.core.security import (
     get_current_active_user,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
+from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(
@@ -33,9 +39,9 @@ async def register_user(
             detail="Username or email already registered"
         )
 
-    # Create user profile
+    # Create user profile first
     new_user = User(
-        account_number="TEMP-123",
+        account_number=f"ACC-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",  # Generate unique account number
         industry="Not Set",
         occupation="Not Set",
         organisation="Not Set",
@@ -51,19 +57,18 @@ async def register_user(
         marital_status=MaritalStatus.SINGLE,
     )
     db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    db.flush()  # Flush to get the new_user.id without committing
 
-    # Create auth record
+    # Create auth record with the user_id
     new_auth = Auth(
-        user_id=new_user.id,
+        user_id=new_user.id,  # Now we have the user_id
         username=user_data.username,
         email=user_data.email,
         hashed_password=get_password_hash(user_data.password),
         is_active=True
     )
     db.add(new_auth)
-    db.commit()
+    db.commit()  # Now commit both records
     db.refresh(new_auth)
 
     return UserResponse(
@@ -134,4 +139,12 @@ async def update_user_profile(
     db.commit()
     db.refresh(user_profile)
 
-    return current_user 
+    return current_user
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout():
+    """
+    Logout endpoint - returns success message
+    The actual token invalidation is handled by the frontend by removing the token
+    """
+    return {"message": "Successfully logged out"} 

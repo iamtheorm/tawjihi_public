@@ -10,6 +10,7 @@ from app.models import models
 from app.api.endpoints.auth import router as auth_router
 from app.api.endpoints.analytics import router as analytics_router
 from app.api.endpoints.customers import router as customers_router
+from app.api.endpoints.customer_profile import router as customer_profile_router
 from app.db.database import engine, get_db
 from app.schemas.schemas import UserResponse
 from app.core.security import get_current_user
@@ -37,6 +38,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(analytics_router)
 app.include_router(customers_router)
+app.include_router(customer_profile_router)
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root():

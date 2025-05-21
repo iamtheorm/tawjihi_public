@@ -92,7 +92,28 @@ export default function DashboardPage() {
     try {
       setIsLoggingOut(true)
       
-      // Remove the token cookie with the same options it was set with
+      const token = Cookies.get('token')
+      if (!token) {
+        toast.error('No active session found')
+        router.push('/')
+        return
+      }
+
+      // Call backend logout endpoint
+      const response = await fetch('http://localhost:8000/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || `Failed to logout: ${response.status}`)
+      }
+      
+      // Remove the token cookie
       Cookies.remove('token', {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict'
@@ -104,8 +125,15 @@ export default function DashboardPage() {
       // Redirect to login page
       router.push('/')
     } catch (error) {
-      toast.error('Failed to logout. Please try again.')
       console.error('Logout error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to logout. Please try again.')
+      
+      // If the error is due to network/server issues, still clear the local session
+      Cookies.remove('token', {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+      router.push('/')
     } finally {
       setIsLoggingOut(false)
     }

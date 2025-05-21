@@ -1,5 +1,8 @@
-"use client"
+'use client';
 
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import axios from 'axios';
 import {
   AreaChart,
   Area,
@@ -35,24 +38,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-// Sample data
-const customerProfile = {
-  id: "1",
-  name: "Ahmed Al-Farsi",
-  email: "ahmed.f@example.com",
-  phone: "+968 9123 4567",
-  address: "123 Sultan Qaboos St, Al Khuwair, Muscat",
-  accountNumber: "3845792164",
-  segment: "High Net Worth",
-  region: "Muscat",
-  status: "active",
-  joinDate: "Jun 2018",
-  income: "180,000 OMR",
-  occupation: "Senior Marketing Director",
-  age: 42,
-  lastActivity: "2 hours ago",
-}
-
+// Sample data for features not yet implemented in backend
 const transactionData = [
   { month: "Jan", spending: 3200, saving: 1800 },
   { month: "Feb", spending: 3800, saving: 1600 },
@@ -69,30 +55,6 @@ const spendingCategories = [
   { name: "Retail", value: 20 },
   { name: "Entertainment", value: 15 },
   { name: "Other", value: 5 },
-]
-
-const recommendations = [
-  {
-    id: 1,
-    product: "Premium Sharia-Compliant Travel Card",
-    confidence: 92,
-    rationale: "Frequent international travel detected",
-    benefits: "No foreign transaction fees, 3x points on travel, lounge access",
-  },
-  {
-    id: 2,
-    product: "Sukuk Investment Portfolio",
-    confidence: 87,
-    rationale: "High savings with conservative investments",
-    benefits: "Balanced growth, tax advantages, retirement optimization",
-  },
-  {
-    id: 3,
-    product: "Home Finance Refinance",
-    confidence: 78,
-    rationale: "Property value increase in Al Khuwair area",
-    benefits: "Low profit rates, tax-deductible profit, flexible usage",
-  },
 ]
 
 const recentInteractions = [
@@ -122,6 +84,32 @@ const recentInteractions = [
 const COLORS = ["#2fb3b6", "#36b9c8", "#4dc4d8", "#65cfe8", "#7edaf8"]
 
 export default function CustomerProfilePage() {
+  const params = useParams();
+  const customerId = params.id;
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/customer-profile/${customerId}`);
+        setProfile(response.data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [customerId]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!profile) return <div>No profile found</div>;
+
+  const { customer, recommendations } = profile;
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -132,7 +120,7 @@ export default function CustomerProfilePage() {
             <ChevronRight className="mx-1 h-4 w-4" />
             <span>Customers</span>
             <ChevronRight className="mx-1 h-4 w-4" />
-            <span>Ahmed Al-Farsi</span>
+            <span>{customer.name}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -151,42 +139,32 @@ export default function CustomerProfilePage() {
         <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarFallback className="text-2xl bg-banking-100 text-banking-700">AF</AvatarFallback>
+              <AvatarFallback className="text-2xl bg-banking-100 text-banking-700">
+                {customer.name.split(' ').map((n: string) => n[0]).join('')}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle>{customerProfile.name}</CardTitle>
-              <CardDescription>Customer since {customerProfile.joinDate}</CardDescription>
-              <Badge className="mt-1 bg-banking-500 hover:bg-banking-600">{customerProfile.segment}</Badge>
+              <CardTitle>{customer.name}</CardTitle>
+              <CardDescription>Customer since {new Date(customer.created_at).toLocaleDateString()}</CardDescription>
+              <Badge className="mt-1 bg-banking-500 hover:bg-banking-600">{customer.segment}</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Account</div>
-                <div className="text-sm font-medium">{customerProfile.accountNumber}</div>
+                <div className="text-sm font-medium">{customer.account}</div>
               </div>
               <div className="space-y-1">
                 <div className="text-xs text-muted-foreground">Status</div>
                 <div className="flex items-center">
                   <div className="mr-1 h-2 w-2 rounded-full bg-success"></div>
-                  <span className="text-sm font-medium">Active</span>
+                  <span className="text-sm font-medium">{customer.status}</span>
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Income</div>
-                <div className="text-sm font-medium">{customerProfile.income}</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Region</div>
-                <div className="text-sm font-medium">{customerProfile.region}</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Occupation</div>
-                <div className="text-sm font-medium">{customerProfile.occupation}</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Age</div>
-                <div className="text-sm font-medium">{customerProfile.age} years</div>
+                <div className="text-xs text-muted-foreground">Potential</div>
+                <div className="text-sm font-medium">{customer.potential}</div>
               </div>
             </div>
 
@@ -197,15 +175,7 @@ export default function CustomerProfilePage() {
               <div className="grid gap-2">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-banking-500" />
-                  <span className="text-sm">{customerProfile.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-banking-500" />
-                  <span className="text-sm">{customerProfile.phone}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Home className="h-4 w-4 text-banking-500" />
-                  <span className="text-sm">{customerProfile.address}</span>
+                  <span className="text-sm">{customer.email}</span>
                 </div>
               </div>
             </div>
@@ -368,24 +338,21 @@ export default function CustomerProfilePage() {
 
               <TabsContent value="recommendations" className="m-0 space-y-6 p-6">
                 <div className="space-y-4">
-                  {recommendations.map((rec) => (
-                    <Card key={rec.id} className="overflow-hidden">
+                  {recommendations.map((rec: any, index: number) => (
+                    <Card key={index} className="overflow-hidden">
                       <div className="flex flex-col md:flex-row">
                         <div className="flex-1 p-6">
                           <div className="flex items-center justify-between">
-                            <div className="font-semibold">{rec.product}</div>
+                            <div className="font-semibold">{rec.title}</div>
                             <Badge
-                              variant={rec.confidence > 85 ? "default" : "secondary"}
-                              className={rec.confidence > 85 ? "bg-banking-500 hover:bg-banking-600" : ""}
+                              variant={rec.priority === "high" ? "default" : "secondary"}
+                              className={rec.priority === "high" ? "bg-banking-500 hover:bg-banking-600" : ""}
                             >
-                              {rec.confidence}% Confidence
+                              {rec.priority} Priority
                             </Badge>
                           </div>
                           <div className="mt-2 text-sm text-muted-foreground">
-                            <strong>Rationale:</strong> {rec.rationale}
-                          </div>
-                          <div className="mt-1 text-sm text-muted-foreground">
-                            <strong>Benefits:</strong> {rec.benefits}
+                            {rec.description}
                           </div>
                           <div className="mt-4 flex items-center gap-2">
                             <Button size="sm" className="bg-banking-500 hover:bg-banking-600">
@@ -402,14 +369,14 @@ export default function CustomerProfilePage() {
                             <div className="text-sm font-medium">Likelihood to Convert</div>
                             <div className="flex items-center gap-2">
                               <Progress
-                                value={rec.confidence}
+                                value={rec.priority === "high" ? 90 : 70}
                                 className="h-2 flex-1 bg-banking-100"
                                 indicatorClassName="bg-banking-500"
                               />
-                              <span className="text-sm font-medium">{rec.confidence}%</span>
+                              <span className="text-sm font-medium">{rec.priority === "high" ? "90%" : "70%"}</span>
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Based on spending patterns and previous interactions
+                              Based on customer segment and behavior
                             </div>
                           </div>
 
@@ -499,5 +466,5 @@ export default function CustomerProfilePage() {
         </Card>
       </div>
     </div>
-  )
-}
+  );
+} 

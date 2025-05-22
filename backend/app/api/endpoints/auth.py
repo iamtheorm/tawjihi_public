@@ -1,12 +1,8 @@
 from datetime import timedelta, datetime
-from typing import Annotated, Optional
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-
 from app.db.database import get_db
 from app.models.models import Auth, User, EmploymentStatus, MaritalStatus
 from app.schemas.schemas import UserCreate, UserResponse, Token, UserProfileUpdate, UserLogin
@@ -17,7 +13,6 @@ from app.core.security import (
     get_current_active_user,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-from app.core.config import settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -41,7 +36,7 @@ async def register_user(
 
     # Create user profile first
     new_user = User(
-        account_number=f"ACC-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",  # Generate unique account number
+        account_number=f"ACC-{datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S')}",
         industry="Not Set",
         occupation="Not Set",
         organisation="Not Set",

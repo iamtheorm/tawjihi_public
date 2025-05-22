@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime, UTC
-
 from app.db.database import get_db
 from app.models import models
 from app.schemas import schemas

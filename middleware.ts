@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Add paths that should be protected (require authentication)
-const protectedPaths = ['/dashboard', '/settings', '/profile']
+// paths that should be protected (require authentication)
+const protectedPaths = ['/dashboard', '/settings', '/customers', '/feedback', '/recommendations', '/analytics']
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value

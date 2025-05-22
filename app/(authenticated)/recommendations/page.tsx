@@ -77,8 +77,8 @@ const [openModal, setOpenModal] = useState(false);
 useEffect(() => {
   async function fetchDropdowns() {
     const [segmentRes, productRes] = await Promise.all([
-      fetch("http://localhost:8000/segments"),
-      fetch("http://localhost:8000/products"),
+      fetch("http://localhost:8000/segments/"),
+      fetch("http://localhost:8000/products/"),
     ]);
 
     if (segmentRes.ok) {
@@ -102,7 +102,7 @@ useEffect(() => {
 
 const handleSchedule = async () => {
   try {
-    const res = await fetch("http://localhost:8000/schedule-campaign/", {
+    const res = await fetch("http://localhost:8000/recommendations/campaigns/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -147,7 +147,7 @@ const currentRecommendations = filteredRecommendations.slice(
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:8000/recommendations")
+        const res = await fetch("http://localhost:8000/recommendations/")
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`)
         }

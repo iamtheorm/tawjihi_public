@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from app.models.models import EmploymentStatus, MaritalStatus
 from enum import Enum
 
@@ -59,9 +59,10 @@ class CustomerBase(BaseModel):
     name: str
     email: EmailStr
     account: str
-    segment: str
-    status: str
-    potential: str
+    segment: Optional[str] = None
+    status: Optional[str] = None
+    recommendation: Optional[str] = None
+    potential: Optional[str] = None
 
 class CustomerCreate(CustomerBase):
     pass
@@ -176,4 +177,81 @@ class CustomerGrowthResponse(BaseModel):
     year: int
     new_customers: int
     churned_customers: int
-    net_growth: int 
+    net_growth: int
+
+# New schemas for recommendations system
+class ProductBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class ProductCreate(ProductBase):
+    pass
+
+class Product(ProductBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class SegmentBase(BaseModel):
+    name: str
+
+class SegmentCreate(SegmentBase):
+    pass
+
+class Segment(SegmentBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class RecommendationBase(BaseModel):
+    product_id: int
+    segment_id: int
+    potential: str
+
+class RecommendationCreate(RecommendationBase):
+    pass
+
+class Recommendation(RecommendationBase):
+    id: int
+    customer_count: Optional[int] = 0
+    conversion_rate: Optional[float] = 0.0
+    product: Optional[Product]
+    segment: Optional[Segment]
+
+    model_config = ConfigDict(from_attributes=True)
+
+class RecommendationResponse(RecommendationBase):
+    id: int
+    product: Optional[Product]
+    segment: Optional[Segment]
+    customer_count: int
+    conversion_rate: float
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CampaignBase(BaseModel):
+    product_id: int
+    segment_id: int
+    schedule_date: datetime
+    notes: Optional[str] = None
+
+class CampaignCreate(CampaignBase):
+    pass
+
+class Campaign(CampaignBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+class SegmentOut(BaseModel):
+    id: int
+    name: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class ProductOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+
+    model_config = ConfigDict(from_attributes=True) 

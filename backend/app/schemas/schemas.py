@@ -6,11 +6,23 @@ from enum import Enum
 
 # Auth Schemas
 class UserBase(BaseModel):
-    email: EmailStr
-    username: str
+    account_number: str
+    industry: Optional[str] = None
+    occupation: Optional[str] = None
+    organisation: Optional[str] = None
+    residence: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    employment_status: Optional[EmploymentStatus] = None
+    basic_salary: Optional[float] = None
+    expected_monthly_income: Optional[float] = None
+    permanent_address_line1: Optional[str] = None
+    city: Optional[str] = None
+    post_code: Optional[str] = None
+    nationality: Optional[str] = None
+    marital_status: Optional[MaritalStatus] = None
 
 class UserCreate(UserBase):
-    password: str
+    pass
 
 class UserLogin(BaseModel):
     username: str
@@ -18,7 +30,8 @@ class UserLogin(BaseModel):
 
 class UserResponse(UserBase):
     id: int
-    is_active: bool
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -46,10 +59,11 @@ class TransactionType(str, Enum):
 
 class Transaction(BaseModel):
     id: int
-    transaction_type: TransactionType
+    account_number: str
+    transaction_type: str
     amount: float
-    description: str
-    transaction_date: datetime
+    description: Optional[str] = None
+    created_at: datetime
 
     class Config:
         from_attributes = True

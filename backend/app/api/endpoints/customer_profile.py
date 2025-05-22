@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from app.db.database import get_db
 from app.models.models import Customer, Transaction, User
-from app.schemas.schemas import CustomerProfile
+from app.schemas.schemas import CustomerProfile, UserResponse, Transaction as TransactionSchema
 
 router = APIRouter(
     prefix="/customer-profile",
@@ -19,19 +19,23 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
     
     # Get user details if exists
     user = db.query(User).filter(User.account_number == customer.account).first()
+    user_response = UserResponse.from_orm(user) if user else None
     
     # Get transaction history
     transactions = db.query(Transaction).filter(
         Transaction.account_number == customer.account
-    ).order_by(Transaction.transaction_date.desc()).limit(10).all()
+    ).order_by(Transaction.created_at.desc()).limit(10).all()
+    
+    # Convert transactions to schema
+    transaction_schemas = [TransactionSchema.from_orm(t) for t in transactions]
     
     # Generate personalized recommendations based on customer data
     recommendations = generate_recommendations(customer, user, transactions)
     
     return {
         "customer": customer,
-        "user": user,
-        "transactions": transactions or [],
+        "user": user_response,
+        "transactions": transaction_schemas,
         "recommendations": recommendations
     }
 
@@ -44,11 +48,11 @@ def generate_recommendations(customer: Customer, user: User, transactions: List[
     avg_transaction = (total_credit + total_debit) / len(transactions) if transactions else 0
     
     # Basic recommendations based on customer segment
-    if customer.segment == "High Net Worth":
+    if customer.segment == "High Value":
         recommendations.extend([
             {
                 "title": "Premium Investment Portfolio",
-                "description": "Based on your high net worth status, consider our premium investment portfolio with exclusive benefits.",
+                "description": "Based on your high value status, consider our premium investment portfolio with exclusive benefits.",
                 "priority": "high"
             },
             {
@@ -57,7 +61,7 @@ def generate_recommendations(customer: Customer, user: User, transactions: List[
                 "priority": "high"
             }
         ])
-    elif customer.segment == "Mass Affluent":
+    elif customer.segment == "Medium Value":
         recommendations.extend([
             {
                 "title": "Investment Advisory",
@@ -87,7 +91,7 @@ def generate_recommendations(customer: Customer, user: User, transactions: List[
         })
     
     # Recommendations based on user profile
-    if user and user.employment_status == "self_employed":
+    if user and user.employment_status == "SELF_EMPLOYED":
         recommendations.append({
             "title": "Business Loan Options",
             "description": "Explore our competitive business loan options for self-employed professionals.",

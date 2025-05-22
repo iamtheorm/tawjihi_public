@@ -3,27 +3,41 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import os
 from datetime import datetime, UTC
+# from dotenv import load_dotenv
 from app.models.models import (
     Segment, Product, Recommendation, CustomerRecommendation,
     CustomerSegment, ProductPerformance, RegionalPerformance,
     MonthlyTrend, CustomerGrowth, User, Transaction, TransactionType,
-    Customer
+    Customer, EmploymentStatus, MaritalStatus, Auth
 )
+from passlib.context import CryptContext
+
+# Load environment variables
+# load_dotenv()
 
 # Database setup
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'app.db')}"
+# DB_HOST = os.getenv("DB_HOST", "localhost")
+# DB_NAME = os.getenv("DB_NAME", "tawjihai_test")
+# DB_USER = os.getenv("DB_USER", "postgres")
+# DB_PASSWORD = os.getenv("DB_PASSWORD", "ritesh123")
+# DB_PORT = os.getenv("DB_PORT", "5432")
+
+DATABASE_URL = "postgresql://postgres:ritesh123@localhost:5432/tawjihai_test"
 
 # Create SQLAlchemy engine
-engine = create_engine(
-    DATABASE_URL, connect_args={"check_same_thread": False}
-)
+engine = create_engine(DATABASE_URL)
 
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Create Base class
 Base = declarative_base()
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
 
 def seed_recommendations_data(db):
     """Seeds recommendations data including segments, products, and recommendations."""
@@ -193,99 +207,99 @@ def seed_analytics_data(db):
         raise
 
 def seed_customers_data(db):
-    """Seeds customer data including users and their transactions."""
+    """Seed customers data"""
     try:
-        print("\n=== Seeding Customers Data ===")
+        # Create users
+        users = []
+        for i in range(1, 101):
+            user = User(
+                account_number=f"ACC{i:06d}",
+                industry="Technology",
+                occupation="Software Engineer",
+                organisation="Tech Corp",
+                residence="Muscat",
+                date_of_birth="1990-01-01",
+                employment_status=EmploymentStatus.EMPLOYED,
+                basic_salary=2000.0,
+                expected_monthly_income=2500.0,
+                permanent_address_line1="123 Main St",
+                city="Muscat",
+                post_code="123",
+                nationality="Omani",
+                marital_status=MaritalStatus.SINGLE
+            )
+            users.append(user)
         
-        # Seed Users
-        if not db.query(User).first():
-            users = [
-                User(
-                    account_number=f"ACC{i:06d}",
-                    industry="Technology",
-                    occupation="Software Engineer",
-                    organisation="Tech Corp",
-                    residence="Muscat",
-                    date_of_birth="1990-01-01",
-                    employment_status="EMPLOYED",
-                    basic_salary=2000.0,
-                    expected_monthly_income=2500.0,
-                    permanent_address_line1="123 Main St",
-                    city="Muscat",
-                    post_code="123",
-                    nationality="Omani",
-                    marital_status="SINGLE"
-                ) for i in range(1, 101)  # Create 100 users
-            ]
-            db.add_all(users)
-            print("✅ Users seeded successfully")
-
-        # Seed Transactions
-        if not db.query(Transaction).first():
-            transactions = []
-            for user in db.query(User).all():
-                # Add some credit transactions
-                for _ in range(3):
-                    transactions.append(
-                        Transaction(
-                            account_number=user.account_number,
-                            transaction_type=TransactionType.CREDIT,
-                            amount=1000.0,
-                            description="Salary deposit"
-                        )
-                    )
-                # Add some debit transactions
-                for _ in range(2):
-                    transactions.append(
-                        Transaction(
-                            account_number=user.account_number,
-                            transaction_type=TransactionType.DEBIT,
-                            amount=500.0,
-                            description="Monthly expenses"
-                        )
-                    )
-            db.add_all(transactions)
-            print("✅ Transactions seeded successfully")
-
-        # Seed Sample Customers
-        if not db.query(Customer).first():
-            customers = [
-                Customer(
-                    name="John Doe",
-                    email="john.doe@example.com",
-                    account="ACC001",
-                    segment="High Net Worth",
-                    status="active",
-                    potential="high",
-                    recommendation="Premium Investment Portfolio"
-                ),
-                Customer(
-                    name="Jane Smith",
-                    email="jane.smith@example.com",
-                    account="ACC002",
-                    segment="Mass Affluent",
-                    status="active",
-                    potential="medium",
-                    recommendation="Investment Advisory"
-                ),
-                Customer(
-                    name="Bob Johnson",
-                    email="bob.johnson@example.com",
-                    account="ACC003",
-                    segment="Retail",
-                    status="active",
-                    potential="low",
-                    recommendation="Basic Savings Account"
-                )
-            ]
-            db.add_all(customers)
-            print("✅ Sample customers seeded successfully")
-
+        db.bulk_save_objects(users)
         db.commit()
-            
+        print("✅ Users seeded successfully")
+
+        # Create transactions
+        transactions = []
+        for user in users:
+            for j in range(5):  # 5 transactions per user
+                transaction = Transaction(
+                    account_number=user.account_number,
+                    transaction_type=TransactionType.CREDIT if j % 2 == 0 else TransactionType.DEBIT,
+                    amount=1000.0 if j % 2 == 0 else -500.0,
+                    description=f"Transaction {j+1} for {user.account_number}",
+                    created_at=datetime.now(UTC)
+                )
+                transactions.append(transaction)
+        
+        db.bulk_save_objects(transactions)
+        db.commit()
+        print("✅ Transactions seeded successfully")
+
+        # Create sample customers
+        customers = []
+        for i in range(1, 101):
+            customer = Customer(
+                name=f"Customer {i}",
+                email=f"customer{i}@example.com",
+                account=f"ACC{i:06d}",
+                segment="Premium" if i % 3 == 0 else "Standard",
+                status="Active",
+                recommendation="Investment Portfolio" if i % 3 == 0 else "Savings Account",
+                potential="High" if i % 3 == 0 else "Medium"
+            )
+            customers.append(customer)
+        
+        db.bulk_save_objects(customers)
+        db.commit()
+        print("✅ Sample customers seeded successfully")
+
     except Exception as e:
-        print(f"❌ Error seeding customers data: {str(e)}")
         db.rollback()
+        print(f"❌ Error seeding customers data: {str(e)}")
+        raise
+
+def seed_auth_data(db):
+    """Seed authentication data"""
+    try:
+        # Create admin user
+        admin = Auth(
+            email="admin@example.com",
+            password=get_password_hash("admin123"),
+            is_active=True,
+            is_superuser=True
+        )
+        
+        # Create regular user
+        user = Auth(
+            email="user@example.com",
+            password=get_password_hash("user123"),
+            is_active=True,
+            is_superuser=False
+        )
+        
+        db.add_all([admin, user])
+        db.commit()
+        print("✅ Auth users seeded successfully")
+        
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Error seeding auth data: {str(e)}")
         raise
 
 def seed_all_data():
@@ -298,6 +312,7 @@ def seed_all_data():
         Base.metadata.create_all(bind=engine)
         
         # Seed all data
+        seed_auth_data(db)
         seed_recommendations_data(db)
         seed_analytics_data(db)
         seed_customers_data(db)

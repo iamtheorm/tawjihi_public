@@ -92,14 +92,14 @@ async def get_analytics_summary(
         
         deposits = db.query(func.sum(models.Transaction.amount)).filter(
             models.Transaction.transaction_type == models.TransactionType.CREDIT,
-            models.Transaction.transaction_date >= current_month_start,
-            models.Transaction.transaction_date < current_month_end
+            models.Transaction.created_at >= current_month_start,
+            models.Transaction.created_at < current_month_end
         ).scalar() or 0
         
         withdrawals = db.query(func.sum(models.Transaction.amount)).filter(
             models.Transaction.transaction_type == models.TransactionType.DEBIT,
-            models.Transaction.transaction_date >= current_month_start,
-            models.Transaction.transaction_date < current_month_end
+            models.Transaction.created_at >= current_month_start,
+            models.Transaction.created_at < current_month_end
         ).scalar() or 0
         
         net_cash_flow = deposits - withdrawals

@@ -5,6 +5,11 @@ from app.models import models
 from app.schemas import schemas
 from app.db.database import get_db
 from sqlalchemy import func, and_
+# import logging
+
+# # Configure logging
+# logging.basicConfig(level=logging.WARNING)
+# logger = logging.getLogger(__name__)
 
 # Main recommendations router
 router = APIRouter(
@@ -88,7 +93,6 @@ def get_recommendations(
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    print("Fetching recommendations...")
     recommendations = (
         db.query(models.Recommendation)
         .options(joinedload(models.Recommendation.product), joinedload(models.Recommendation.segment))
@@ -96,7 +100,6 @@ def get_recommendations(
         .limit(limit)
         .all()
     )
-    print(f"Found {len(recommendations)} recommendations")
 
     results = []
     for rec in recommendations:
@@ -128,9 +131,7 @@ def get_recommendations(
             conversion_rate=conversion_rate
         )
         results.append(result)
-        print(f"Processed recommendation: {result}")
 
-    print(f"Returning {len(results)} results")
     return results
 
 # Campaign Endpoints

@@ -6,16 +6,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from app.models import models
-from app.api.endpoints.auth import router as auth_router
-from app.api.endpoints.analytics import router as analytics_router
-from app.api.endpoints.customers import router as customers_router
-from app.api.endpoints.customer_profile import router as customer_profile_router
-from app.api.endpoints.recommendations import router as recommendations_router, segments_router, products_router
-from app.db.database import engine, get_db
+from app.db.database import Base, engine, get_db
+from app.api.endpoints import (
+    auth,
+    analytics,
+    customers,
+    customer_profile,
+    recommendations
+)
 
 # Create database tables
-models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,13 +44,13 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(auth_router)
-app.include_router(analytics_router)
-app.include_router(customers_router)
-app.include_router(customer_profile_router)
-app.include_router(recommendations_router)
-app.include_router(segments_router)
-app.include_router(products_router)
+app.include_router(auth.router)
+app.include_router(analytics.router)
+app.include_router(customers.router)
+app.include_router(customer_profile.router)
+app.include_router(recommendations.router)
+app.include_router(recommendations.segments_router)
+app.include_router(recommendations.products_router)
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root():

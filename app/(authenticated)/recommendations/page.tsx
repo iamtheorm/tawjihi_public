@@ -14,6 +14,8 @@ import {
   Wallet,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -201,6 +203,71 @@ const handleViewCustomers = async (segment: string) => {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
+<Dialog open={openModal} onOpenChange={setOpenModal}>
+  <DialogTrigger asChild>
+    <Button>
+      <Calendar className="mr-2 h-4 w-4" />
+      Schedule Campaign
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="sm:max-w-[500px]">
+    <DialogHeader>
+      <DialogTitle>Schedule Campaign</DialogTitle>
+    </DialogHeader>
+    <div className="grid gap-4 py-4">
+      <Select
+  value={formData.segmentId}
+  onValueChange={(value) => setFormData({ ...formData, segmentId: value })}
+>
+  <SelectTrigger>
+    <SelectValue placeholder="Select Segment" />
+  </SelectTrigger>
+  <SelectContent>
+    {segments.map((seg) => (
+      <SelectItem key={seg.id} value={seg.id.toString()}>
+        {seg.name}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+<Select
+  value={formData.productId}
+  onValueChange={(value) => setFormData({ ...formData, productId: value })}
+>
+  <SelectTrigger>
+    <SelectValue placeholder="Select Product" />
+  </SelectTrigger>
+  <SelectContent>
+    {products.map((prod) => (
+      <SelectItem key={prod.id} value={prod.id.toString()}>
+        {prod.name}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+
+<Input
+  type="datetime-local"
+  value={formData.scheduleDate}
+  onChange={(e) => setFormData({ ...formData, scheduleDate: e.target.value })}
+/>
+
+<Input
+  placeholder="Optional notes"
+  value={formData.notes}
+  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+/>
+
+    </div>
+    <div className="flex justify-end gap-2">
+      <Button variant="outline" onClick={() => setOpenModal(false)}>Cancel</Button>
+      <Button onClick={handleSchedule}>Confirm</Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
 <Dialog open={openModal} onOpenChange={setOpenModal}>
   <DialogTrigger asChild>
     <Button>

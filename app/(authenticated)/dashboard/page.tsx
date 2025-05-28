@@ -6,6 +6,10 @@ import { AlertTriangle, ArrowUp, ArrowUpRight, DollarSign, TrendingUp, Users } f
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import Cookies from 'js-cookie'
+import { useState } from "react"
 
 // Sample data for charts and metrics
 const customerActivityData = [
@@ -81,11 +85,73 @@ const alerts = [
 ]
 
 export default function DashboardPage() {
+  const router = useRouter()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      
+      const token = Cookies.get('token')
+      if (!token) {
+        toast.error('No active session found')
+        router.push('/')
+        return
+      }
+
+      // Call backend logout endpoint
+      const response = await fetch('http://localhost:8000/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.detail || `Failed to logout: ${response.status}`)
+      }
+      
+      // Remove the token cookie
+      Cookies.remove('token', {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+      
+      // Show success message
+      toast.success('Logged out successfully')
+      
+      // Redirect to login page
+      router.push('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to logout. Please try again.')
+      
+      // If the error is due to network/server issues, still clear the local session
+      Cookies.remove('token', {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+      router.push('/')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Dashboard Overview</h1>
         <Button className="bg-banking-500 hover:bg-banking-600">Export Overview</Button>
+        <Button 
+          variant="outline" 
+          onClick={handleLogout}
+          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
       </div>
 
       {/* KPI Stats */}

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   AreaChart,
@@ -23,73 +24,113 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Download, Filter, PieChartIcon, BarChart3, TrendingUp } from "lucide-react"
-
-// Sample data for charts
-const monthlyTrendsData = [
-  { month: "Jan", deposits: 1200000, withdrawals: 800000, netFlow: 400000 },
-  { month: "Feb", deposits: 1350000, withdrawals: 900000, netFlow: 450000 },
-  { month: "Mar", deposits: 1500000, withdrawals: 950000, netFlow: 550000 },
-  { month: "Apr", deposits: 1400000, withdrawals: 1000000, netFlow: 400000 },
-  { month: "May", deposits: 1600000, withdrawals: 1100000, netFlow: 500000 },
-  { month: "Jun", deposits: 1800000, withdrawals: 1200000, netFlow: 600000 },
-  { month: "Jul", deposits: 2000000, withdrawals: 1300000, netFlow: 700000 },
-]
-
-const monthlyInvestmentGrowthData = [
-  { month: 'Jan', investmentGrowth: 500 },
-  { month: 'Feb', investmentGrowth: 1300 },
-  { month: 'Mar', investmentGrowth: 1900 },
-  { month: 'Apr', investmentGrowth: 2900 },
-  { month: 'May', investmentGrowth: 3600 },
-  { month: 'Jun', investmentGrowth: 4600 },
-  { month: 'Jul', investmentGrowth: 5600 },
-];
-
-
-const customerData = [
-  { month: "Jan", new: 100, churned: 20, net: 80 },
-  { month: "Feb", new: 150, churned: 30, net: 120 },
-  { month: "Mar", new: 200, churned: 40, net: 160 },
-  { month: "Apr", new: 180, churned: 35, net: 145 },
-  { month: "May", new: 220, churned: 25, net: 195 },
-  { month: "Jun", new: 240, churned: 50, net: 190 },
-  { month: "Jul", new: 260, churned: 45, net: 215 },
-  { month: "Aug", new: 280, churned: 60, net: 220 },
-  { month: "Sep", new: 300, churned: 55, net: 245 },
-  { month: "Oct", new: 320, churned: 50, net: 270 },
-  { month: "Nov", new: 340, churned: 65, net: 275 },
-  { month: "Dec", new: 360, churned: 70, net: 290 },
-];
-
-
-
-const customerSegmentData = [
-  { name: "High Net Worth", value: 35 },
-  { name: "Mass Affluent", value: 25 },
-  { name: "Retail", value: 30 },
-  { name: "Small Business", value: 10 },
-]
+import { toast } from "sonner"
+import Cookies from 'js-cookie'
 
 const COLORS = ["#2fb3b6", "#36b9c8", "#4dc4d8", "#65cfe8", "#7edaf8"]
 
-const regionPerformanceData = [
-  { region: "Muscat", customers: 2500, revenue: 1200000, growth: 15 },
-  { region: "Salalah", customers: 1200, revenue: 600000, growth: 12 },
-  { region: "Sohar", customers: 950, revenue: 450000, growth: 8 },
-  { region: "Nizwa", customers: 780, revenue: 350000, growth: 10 },
-  { region: "Sur", customers: 650, revenue: 280000, growth: 7 },
-]
-
-const productPerformanceData = [
-  { name: "Savings Accounts", current: 850, previous: 720 },
-  { name: "Current Accounts", current: 650, previous: 600 },
-  { name: "Home Finance", current: 450, previous: 380 },
-  { name: "Personal Finance", current: 380, previous: 350 },
-  { name: "Credit Cards", current: 520, previous: 420 },
-  { name: "Investment Products", current: 280, previous: 220 },
-]
-
 export default function AnalyticsPage() {
+  const [loading, setLoading] = useState(true)
+  const [selectedYear, setSelectedYear] = useState("2023")
+  const [activeTab, setActiveTab] = useState("overview")
+  const [summaryData, setSummaryData] = useState({
+    total_customers: 0,
+    total_assets: 0,
+    net_cash_flow: 0
+  })
+  const [monthlyTrendsData, setMonthlyTrendsData] = useState([])
+  const [customerSegmentData, setCustomerSegmentData] = useState([])
+  const [productPerformanceData, setProductPerformanceData] = useState([])
+  const [regionalPerformanceData, setRegionalPerformanceData] = useState([])
+  const [customerGrowthData, setCustomerGrowthData] = useState([])
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      const token = Cookies.get('token')
+      if (!token) {
+        toast.error("Please login to view analytics")
+        return
+      }
+
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+
+      // Fetch summary data
+      const summaryResponse = await fetch('http://localhost:8000/analytics/summary', { headers })
+      if (!summaryResponse.ok) {
+        throw new Error('Failed to fetch summary data')
+      }
+      const summary = await summaryResponse.json()
+      setSummaryData(summary)
+
+      // Fetch monthly trends
+      const trendsResponse = await fetch(`http://localhost:8000/analytics/monthly-trends?year=${selectedYear}`, { headers })
+      if (!trendsResponse.ok) {
+        throw new Error('Failed to fetch monthly trends')
+      }
+      const trends = await trendsResponse.json()
+      setMonthlyTrendsData(trends)
+
+      // Fetch customer segments
+      const segmentsResponse = await fetch('http://localhost:8000/analytics/customer-segments', { headers })
+      if (!segmentsResponse.ok) {
+        throw new Error('Failed to fetch customer segments')
+      }
+      const segments = await segmentsResponse.json()
+      setCustomerSegmentData(segments)
+
+      // Fetch product performance
+      const productsResponse = await fetch(`http://localhost:8000/analytics/product-performance?period=2023-Q2`, { headers })
+      if (!productsResponse.ok) {
+        throw new Error('Failed to fetch product performance')
+      }
+      const products = await productsResponse.json()
+      setProductPerformanceData(products)
+
+      // Fetch regional performance
+      const regionsResponse = await fetch(`http://localhost:8000/analytics/regional-performance?period=2023-Q2`, { headers })
+      if (!regionsResponse.ok) {
+        throw new Error('Failed to fetch regional performance')
+      }
+      const regions = await regionsResponse.json()
+      setRegionalPerformanceData(regions)
+
+      // Fetch customer growth
+      const growthResponse = await fetch(`http://localhost:8000/analytics/customer-growth?year=${selectedYear}`, { headers })
+      if (!growthResponse.ok) {
+        throw new Error('Failed to fetch customer growth')
+      }
+      const growth = await growthResponse.json()
+      setCustomerGrowthData(growth)
+
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      toast.error("Failed to fetch analytics data")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [selectedYear])
+
+  const handleExport = () => {
+    // Implement export
+    toast.info("Export functionality coming soon")
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-banking-500"></div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -98,7 +139,7 @@ export default function AnalyticsPage() {
           <p className="text-sm text-muted-foreground">Comprehensive analytics and performance metrics</p>
         </div>
         <div className="flex items-center gap-2">
-          <Select defaultValue="2023">
+          <Select value={selectedYear} onValueChange={setSelectedYear}>
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Select year" />
             </SelectTrigger>
@@ -112,14 +153,14 @@ export default function AnalyticsPage() {
             <Filter className="mr-2 h-4 w-4" />
             Filter
           </Button>
-          <Button className="bg-banking-500 hover:bg-banking-600">
+          <Button className="bg-banking-500 hover:bg-banking-600" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6 mt-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 mt-6">
         <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="customers">Customers</TabsTrigger>
@@ -133,7 +174,7 @@ export default function AnalyticsPage() {
               <div className="flex items-start justify-between p-6">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
-                  <p className="text-2xl font-bold">6,080</p>
+                  <p className="text-2xl font-bold">{summaryData?.total_customers?.toLocaleString() || 0}</p>
                 </div>
                 <div className="rounded-full bg-banking-100 p-2 text-banking-500">
                   <TrendingUp className="h-6 w-6" />
@@ -150,7 +191,7 @@ export default function AnalyticsPage() {
               <div className="flex items-start justify-between p-6">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Assets</p>
-                  <p className="text-2xl font-bold">245M OMR</p>
+                  <p className="text-2xl font-bold">{summaryData?.total_assets?.toLocaleString() || 0} OMR</p>
                 </div>
                 <div className="rounded-full bg-banking-100 p-2 text-banking-500">
                   <BarChart3 className="h-6 w-6" />
@@ -167,7 +208,7 @@ export default function AnalyticsPage() {
               <div className="flex items-start justify-between p-6">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Net Cash Flow</p>
-                  <p className="text-2xl font-bold">3.6M OMR</p>
+                  <p className="text-2xl font-bold">{summaryData?.net_cash_flow?.toLocaleString() || 0} OMR</p>
                 </div>
                 <div className="rounded-full bg-banking-100 p-2 text-banking-500">
                   <PieChartIcon className="h-6 w-6" />
@@ -198,7 +239,7 @@ export default function AnalyticsPage() {
                       label: "Withdrawals",
                       color: "#ff9580",
                     },
-                    netFlow: {
+                    net_flow: {
                       label: "Net Flow",
                       color: "#8884d8",
                     },
@@ -227,9 +268,9 @@ export default function AnalyticsPage() {
                       />
                       <Area
                         type="monotone"
-                        dataKey="netFlow"
-                        stroke="var(--color-netFlow)"
-                        fill="var(--color-netFlow)"
+                        dataKey="net_flow"
+                        stroke="var(--color-net_flow)"
+                        fill="var(--color-net_flow)"
                         fillOpacity={0.3}
                       />
                     </AreaChart>
@@ -238,42 +279,6 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Investment Growth Trend</CardTitle>
-                <CardDescription>Monthly Investment Growth over time</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={{
-                    investmentGrowth: {
-                      label: "Investment Growth",
-                      color: "#82ca9d",
-                    },
-                  }}
-                  className="h-[300px]"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={monthlyInvestmentGrowthData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Area
-                        type="monotone"
-                        dataKey="investmentGrowth"
-                        stroke="var(--color-investmentGrowth)"
-                        fill="var(--color-investmentGrowth)"
-                        fillOpacity={0.3}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-4 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Customer Segments</CardTitle>
@@ -303,39 +308,6 @@ export default function AnalyticsPage() {
                 </div>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Product Performance</CardTitle>
-                <CardDescription>Current vs previous period</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={{
-                    current: {
-                      label: "Current Period",
-                      color: "#2fb3b6",
-                    },
-                    previous: {
-                      label: "Previous Period",
-                      color: "#8884d8",
-                    },
-                  }}
-                  className="h-[300px]"
-                >
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={productPerformanceData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="current" fill="var(--color-current)" />
-                      <Bar dataKey="previous" fill="var(--color-previous)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </CardContent>
-            </Card>
           </div>
         </TabsContent>
 
@@ -348,15 +320,15 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={customerData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+                  <LineChart data={customerGrowthData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="new" stroke="#2fb3b6" name="New Customers" />
-                    <Line type="monotone" dataKey="churned" stroke="#ff9580" name="Churned Customers" />
-                    <Line type="monotone" dataKey="net" stroke="#8884d8" name="Net Growth" />
+                    <Line type="monotone" dataKey="new_customers" stroke="#2fb3b6" name="New Customers" />
+                    <Line type="monotone" dataKey="churned_customers" stroke="#ff9580" name="Churned Customers" />
+                    <Line type="monotone" dataKey="net_growth" stroke="#8884d8" name="Net Growth" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -422,7 +394,7 @@ export default function AnalyticsPage() {
                 className="h-[300px]"
               >
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={regionPerformanceData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
+                  <BarChart data={regionalPerformanceData} margin={{ top: 10, right: 30, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="region" />
                     <YAxis yAxisId="left" orientation="left" />

@@ -79,8 +79,8 @@ const [openModal, setOpenModal] = useState(false);
 useEffect(() => {
   async function fetchDropdowns() {
     const [segmentRes, productRes] = await Promise.all([
-      fetch("http://localhost:8000/segments"),
-      fetch("http://localhost:8000/products"),
+      fetch("http://localhost:8000/segments/"),
+      fetch("http://localhost:8000/products/"),
     ]);
 
     if (segmentRes.ok) {
@@ -104,7 +104,7 @@ useEffect(() => {
 
 const handleSchedule = async () => {
   try {
-    const res = await fetch("http://localhost:8000/schedule-campaign/", {
+    const res = await fetch("http://localhost:8000/recommendations/campaigns/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -149,7 +149,7 @@ const currentRecommendations = filteredRecommendations.slice(
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:8000/recommendations")
+        const res = await fetch("http://localhost:8000/recommendations/")
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`)
         }
@@ -203,71 +203,68 @@ const handleViewCustomers = async (segment: string) => {
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
-<Dialog open={openModal} onOpenChange={setOpenModal}>
-  <DialogTrigger asChild>
-    <Button>
-      <Calendar className="mr-2 h-4 w-4" />
-      Schedule Campaign
-    </Button>
-  </DialogTrigger>
-  <DialogContent className="sm:max-w-[500px]">
-    <DialogHeader>
-      <DialogTitle>Schedule Campaign</DialogTitle>
-    </DialogHeader>
-    <div className="grid gap-4 py-4">
-      <Select
-  value={formData.segmentId}
-  onValueChange={(value) => setFormData({ ...formData, segmentId: value })}
->
-  <SelectTrigger>
-    <SelectValue placeholder="Select Segment" />
-  </SelectTrigger>
-  <SelectContent>
-    {segments.map((seg) => (
-      <SelectItem key={seg.id} value={seg.id.toString()}>
-        {seg.name}
-      </SelectItem>
-    ))}
-  </SelectContent>
-</Select>
+          <Dialog open={openModal} onOpenChange={setOpenModal}>
+            <DialogTrigger asChild>
+              <Button>
+                <Calendar className="mr-2 h-4 w-4" />
+                Schedule Campaign
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Schedule Campaign</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <Select
+                  value={formData.segmentId}
+                  onValueChange={(value) => setFormData({ ...formData, segmentId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Segment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {segments.map((seg) => (
+                      <SelectItem key={seg.id} value={seg.id.toString()}>
+                        {seg.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
-<Select
-  value={formData.productId}
-  onValueChange={(value) => setFormData({ ...formData, productId: value })}
->
-  <SelectTrigger>
-    <SelectValue placeholder="Select Product" />
-  </SelectTrigger>
-  <SelectContent>
-    {products.map((prod) => (
-      <SelectItem key={prod.id} value={prod.id.toString()}>
-        {prod.name}
-      </SelectItem>
-    ))}
-  </SelectContent>
-</Select>
+                <Select
+                  value={formData.productId}
+                  onValueChange={(value) => setFormData({ ...formData, productId: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((prod) => (
+                      <SelectItem key={prod.id} value={prod.id.toString()}>
+                        {prod.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
 
+                <Input
+                  type="datetime-local"
+                  value={formData.scheduleDate}
+                  onChange={(e) => setFormData({ ...formData, scheduleDate: e.target.value })}
+                />
 
-<Input
-  type="datetime-local"
-  value={formData.scheduleDate}
-  onChange={(e) => setFormData({ ...formData, scheduleDate: e.target.value })}
-/>
-
-<Input
-  placeholder="Optional notes"
-  value={formData.notes}
-  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-/>
-
-    </div>
-    <div className="flex justify-end gap-2">
-      <Button variant="outline" onClick={() => setOpenModal(false)}>Cancel</Button>
-      <Button onClick={handleSchedule}>Confirm</Button>
-    </div>
-  </DialogContent>
-</Dialog>
-
+                <Input
+                  placeholder="Optional notes"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setOpenModal(false)}>Cancel</Button>
+                <Button onClick={handleSchedule}>Confirm</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

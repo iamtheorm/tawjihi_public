@@ -1,25 +1,41 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import joinedload, Session
 from typing import List
-from .. import models, schemas
-from ..database import SessionLocal
+from app.models import models
+from app.schemas import schemas
+from app.db.database import get_db
 from sqlalchemy import func, and_
+# import logging
 
+# # Configure logging
+# logging.basicConfig(level=logging.WARNING)
+# logger = logging.getLogger(__name__)
+
+# Main recommendations router
 router = APIRouter(
     prefix="/recommendations",
     tags=["Recommendations"]
 )
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# Separate router for segments and products
+segments_router = APIRouter(
+    prefix="/segments",
+    tags=["Segments"]
+)
 
-# ----------------------------
+products_router = APIRouter(
+    prefix="/products",
+    tags=["Products"]
+)
+
 # Product Endpoints
-# ----------------------------
+@products_router.get("/", response_model=List[schemas.Product])
+def get_products(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    return db.query(models.Product).offset(skip).limit(limit).all()
 
 @router.post("/products/", response_model=schemas.Product)
 def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
@@ -30,16 +46,21 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
     return db_product
 
 @router.get("/products/", response_model=List[schemas.Product])
-def get_products(
+def get_products_with_prefix(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     return db.query(models.Product).offset(skip).limit(limit).all()
 
-# ----------------------------
 # Segment Endpoints
-# ----------------------------
+@segments_router.get("/", response_model=List[schemas.Segment])
+def get_segments(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    return db.query(models.Segment).offset(skip).limit(limit).all()
 
 @router.post("/segments/", response_model=schemas.Segment)
 def create_segment(segment: schemas.SegmentCreate, db: Session = Depends(get_db)):
@@ -50,17 +71,14 @@ def create_segment(segment: schemas.SegmentCreate, db: Session = Depends(get_db)
     return db_segment
 
 @router.get("/segments/", response_model=List[schemas.Segment])
-def get_segments(
+def get_segments_with_prefix(
     skip: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
     return db.query(models.Segment).offset(skip).limit(limit).all()
 
-# ----------------------------
 # Recommendation Endpoints
-# ----------------------------
-
 @router.post("/", response_model=schemas.Recommendation)
 def create_recommendation(recommendation: schemas.RecommendationCreate, db: Session = Depends(get_db)):
     db_recommendation = models.Recommendation(**recommendation.model_dump())
@@ -84,9 +102,7 @@ def get_recommendations(
     )
 
     results = []
-
     for rec in recommendations:
-        # Fetch total customers for this recommendation's product and segment
         total_customers = db.query(models.CustomerRecommendation).filter(
             and_(
                 models.CustomerRecommendation.product_id == rec.product_id,
@@ -94,7 +110,6 @@ def get_recommendations(
             )
         ).count()
 
-        # Fetch accepted customers
         accepted_customers = db.query(models.CustomerRecommendation).filter(
             and_(
                 models.CustomerRecommendation.product_id == rec.product_id,
@@ -103,28 +118,23 @@ def get_recommendations(
             )
         ).count()
 
-        # Calculate conversion rate
         conversion_rate = round((accepted_customers / total_customers) * 100, 2) if total_customers else 0.0
 
-        results.append(
-            schemas.RecommendationResponse(
-                id=rec.id,
-                product_id=rec.product_id,
-                segment_id=rec.segment_id,
-                product=rec.product,
-                segment=rec.segment,
-                potential=rec.potential,
-                customer_count=total_customers,
-                conversion_rate=conversion_rate
-            )
+        result = schemas.RecommendationResponse(
+            id=rec.id,
+            product_id=rec.product_id,
+            segment_id=rec.segment_id,
+            product=rec.product,
+            segment=rec.segment,
+            potential=rec.potential,
+            customer_count=total_customers,
+            conversion_rate=conversion_rate
         )
+        results.append(result)
 
     return results
 
-# ----------------------------
 # Campaign Endpoints
-# ----------------------------
-
 @router.post("/campaigns/", response_model=schemas.Campaign)
 def create_campaign(campaign: schemas.CampaignCreate, db: Session = Depends(get_db)):
     db_campaign = models.Campaign(**campaign.model_dump())

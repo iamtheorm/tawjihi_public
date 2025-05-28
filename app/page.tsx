@@ -25,18 +25,70 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ModeToggle } from "@/components/mode-toggle"
+import { toast } from "sonner"
+import Cookies from 'js-cookie'
 
 export default function LoginPage() {
   const router = useRouter()
   const [loading, setLoading] = React.useState(false)
+  const [mounted, setMounted] = React.useState(false)
+  const [formData, setFormData] = React.useState({
+    username: "",
+    password: "",
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle mounting state to prevent hydration issues
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+
+    try {
+      const response = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail || "Login failed")
+      }
+
+      const data = await response.json()
+      
+      // Store the token in a cookie that expires in 30 days
+      Cookies.set('token', data.access_token, { 
+        expires: 30,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      })
+      
+      // Redirect to dashboard
       router.push("/dashboard")
-    }, 1000)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Login failed")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Prevent hydration issues by not rendering until mounted
+  if (!mounted) {
+    return null
   }
 
   return (
@@ -51,16 +103,16 @@ export default function LoginPage() {
         <Card className="w-full shadow-md border bg-white dark:bg-gray-950">
           <CardHeader className="text-center space-y-1">
             <div className="flex items-center justify-center space-x-2">
-  <Image
-    src="/Logo_No_Bg-Name.png"
-    alt="TAWJIH AI"
-    width={40}
-    height={40}
-  />
-  <span className="text-lg font-semibold text-banking-700 dark:text-white">
-    TAWJIH AI
-  </span>
-</div>
+              <Image
+                src="/Logo_No_Bg-Name.png"
+                alt="TAWJIH AI"
+                width={40}
+                height={40}
+              />
+              <span className="text-lg font-semibold text-banking-700 dark:text-white">
+                TAWJIH AI
+              </span>
+            </div>
 
             <CardTitle className="text-xl font-bold">
               Welcome to TAWJIH AI
@@ -82,6 +134,8 @@ export default function LoginPage() {
                     placeholder="mohammed.a"
                     className="pl-9"
                     required
+                    value={formData.username}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -104,6 +158,8 @@ export default function LoginPage() {
                     type="password"
                     className="pl-9"
                     required
+                    value={formData.password}
+                    onChange={handleChange}
                   />
                 </div>
               </div>

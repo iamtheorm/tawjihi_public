@@ -9,141 +9,182 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import Cookies from 'js-cookie'
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from 'axios'
+import { exportToCSV } from "@/lib/utils"
 
-// Sample data for charts and metrics
-const customerActivityData = [
-  { month: "Jan", active: 420, dormant: 80 },
-  { month: "Feb", active: 450, dormant: 70 },
-  { month: "Mar", active: 480, dormant: 60 },
-  { month: "Apr", active: 520, dormant: 50 },
-  { month: "May", active: 550, dormant: 40 },
-  { month: "Jun", active: 580, dormant: 35 },
-  { month: "Jul", active: 620, dormant: 30 },
-]
+interface DashboardSummary {
+  activeCustomers: number
+  conversionRate: number
+  revenueImpact: number
+  highValueLeads: number
+}
 
-const conversionRateData = [
-  { month: "Jan", rate: 32 },
-  { month: "Feb", rate: 34 },
-  { month: "Mar", rate: 38 },
-  { month: "Apr", rate: 40 },
-  { month: "May", rate: 45 },
-  { month: "Jun", rate: 48 },
-  { month: "Jul", rate: 52 },
-]
+interface CustomerActivity {
+  month: string
+  active: number
+  dormant: number
+}
 
-const topRecommendations = [
-  {
-    id: 1,
-    product: "Al Jawhar Credit Card",
-    segment: "High Net Worth",
-    conversion: "48%",
-    potential: "High",
-  },
-  {
-    id: 2,
-    product: "Home Loan",
-    segment: "Homeowners",
-    conversion: "42%",
-    potential: "Medium",
-  },
-  {
-    id: 3,
-    product: "Mutual Funds - Fund 1",
-    segment: "Young Professionals",
-    conversion: "37%",
-    potential: "High",
-  },
-  {
-    id: 4,
-    product: "Personal Loan",
-    segment: "Small Business",
-    conversion: "35%",
-    potential: "Medium",
-  },
-]
+interface ConversionRate {
+  month: string
+  rate: number
+}
 
-const alerts = [
-  {
-    id: 1,
-    title: "High Spending Alert",
-    description: "15 customers in Muscat with unusual spending patterns detected",
-    type: "warning",
-  },
-  {
-    id: 2,
-    title: "Dormant Account Increase",
-    description: "5% increase in dormant accounts in Salalah region",
-    type: "alert",
-  },
-  {
-    id: 3,
-    title: "New Opportunity",
-    description: "35 customers eligible for Family Protection Insurance",
-    type: "opportunity",
-  },
-]
+interface TopRecommendation {
+  id: number
+  product: string
+  segment: string
+  conversion: string
+  potential: "High" | "Medium" | "Low"
+}
+
+interface Alert {
+  id: number
+  title: string
+  description: string
+  type: "warning" | "alert" | "opportunity"
+}
+
+interface DashboardData {
+  customerActivity: CustomerActivity[]
+  conversionRate: ConversionRate[]
+  topRecommendations: TopRecommendation[]
+  alerts: Alert[]
+  summary: DashboardSummary
+}
 
 export default function DashboardPage() {
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
+    customerActivity: [],
+    conversionRate: [],
+    topRecommendations: [],
+    alerts: [],
+    summary: {
+      activeCustomers: 0,
+      conversionRate: 0,
+      revenueImpact: 0,
+      highValueLeads: 0
+    }
+  })
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true)
+      const headers = {
+        'Content-Type': 'application/json'
+      }
+
+      // Fetch dashboard summary
+      const summaryResponse = await axios.get('http://localhost:8000/dashboard/overview', { headers })
+      setDashboardData(prev => ({
+        ...prev,
+        summary: {
+          activeCustomers: summaryResponse.data.active_customers,
+          conversionRate: summaryResponse.data.conversion_rate,
+          revenueImpact: summaryResponse.data.revenue_impact,
+          highValueLeads: summaryResponse.data.new_customers
+        }
+      }))
+
+      // Fetch customer activity
+      const activityResponse = await axios.get('http://localhost:8000/dashboard/customer-activity', { headers })
+      setDashboardData(prev => ({
+        ...prev,
+        customerActivity: activityResponse.data
+      }))
+
+      // Fetch conversion rate
+      const conversionResponse = await axios.get('http://localhost:8000/dashboard/conversion-rates', { headers })
+      setDashboardData(prev => ({
+        ...prev,
+        conversionRate: conversionResponse.data
+      }))
+
+      // Fetch top recommendations
+      const recommendationsResponse = await axios.get('http://localhost:8000/dashboard/top-recommendations', { headers })
+      setDashboardData(prev => ({
+        ...prev,
+        topRecommendations: recommendationsResponse.data
+      }))
+
+      // Fetch alerts
+      const alertsResponse = await axios.get('http://localhost:8000/dashboard/alerts', { headers })
+      setDashboardData(prev => ({
+        ...prev,
+        alerts: alertsResponse.data
+      }))
+
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+      toast.error('Failed to load dashboard data')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true)
-      
-      const token = Cookies.get('token')
-      if (!token) {
-        toast.error('No active session found')
-        router.push('/')
-        return
-      }
-
-      // Call backend logout endpoint
-      const response = await fetch('http://localhost:8000/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.detail || `Failed to logout: ${response.status}`)
-      }
-      
-      // Remove the token cookie
-      Cookies.remove('token', {
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      })
-      
-      // Show success message
-      toast.success('Logged out successfully')
-      
-      // Redirect to login page
       router.push('/')
     } catch (error) {
       console.error('Logout error:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to logout. Please try again.')
-      
-      // If the error is due to network/server issues, still clear the local session
-      Cookies.remove('token', {
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict'
-      })
-      router.push('/')
+      toast.error('Failed to logout. Please try again.')
     } finally {
       setIsLoggingOut(false)
     }
+  }
+
+  const handleExport = () => {
+    try {
+      // Export dashboard data
+      const exportData = {
+        overview: {
+          active_customers: dashboardData.summary.activeCustomers,
+          conversion_rate: dashboardData.summary.conversionRate,
+          revenue_impact: dashboardData.summary.revenueImpact,
+          new_customers: dashboardData.summary.highValueLeads
+        },
+        customer_activity: dashboardData.customerActivity,
+        conversion_rates: dashboardData.conversionRate,
+        top_recommendations: dashboardData.topRecommendations
+      };
+
+      // Export each section separately
+      exportToCSV([exportData.overview], "dashboard_overview");
+      exportToCSV(exportData.customer_activity, "customer_activity");
+      exportToCSV(exportData.conversion_rates, "conversion_rates");
+      exportToCSV(exportData.top_recommendations, "top_recommendations");
+      
+      toast.success("Dashboard data exported successfully");
+    } catch (error) {
+      console.error('Error exporting dashboard data:', error);
+      toast.error("Failed to export dashboard data");
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-6 max-w-full">
+        <div className="flex items-center justify-center h-[calc(100vh-200px)]">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-banking-500"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-full">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Dashboard Overview</h1>
-        <Button className="bg-banking-500 hover:bg-banking-600">Export Overview</Button>
+        <Button className="bg-banking-500 hover:bg-banking-600" onClick={handleExport}>Export Overview</Button>
         <Button 
           variant="outline" 
           onClick={handleLogout}
@@ -155,12 +196,12 @@ export default function DashboardPage() {
       </div>
 
       {/* KPI Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
         <Card className="stat-card">
           <div className="flex items-start justify-between p-6">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Active Customers</p>
-              <p className="text-2xl font-bold">5,320</p>
+              <p className="text-2xl font-bold">{dashboardData.summary.activeCustomers}</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <Users className="h-6 w-6" />
@@ -178,7 +219,7 @@ export default function DashboardPage() {
           <div className="flex items-start justify-between p-6">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Conversion Rate</p>
-              <p className="text-2xl font-bold">46%</p>
+              <p className="text-2xl font-bold">{dashboardData.summary.conversionRate}%</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <TrendingUp className="h-6 w-6" />
@@ -196,7 +237,7 @@ export default function DashboardPage() {
           <div className="flex items-start justify-between p-6">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Revenue Impact</p>
-              <p className="text-2xl font-bold">1.2M OMR</p>
+              <p className="text-2xl font-bold">{dashboardData.summary.revenueImpact} OMR</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <DollarSign className="h-6 w-6" />
@@ -214,7 +255,7 @@ export default function DashboardPage() {
           <div className="flex items-start justify-between p-6">
             <div>
               <p className="text-sm font-medium text-muted-foreground">High-Value Leads</p>
-              <p className="text-2xl font-bold">328</p>
+              <p className="text-2xl font-bold">{dashboardData.summary.highValueLeads}</p>
             </div>
             <div className="rounded-full bg-banking-100 p-2 text-banking-500">
               <ArrowUpRight className="h-6 w-6" />
@@ -230,7 +271,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-4 lg:grid-cols-2 mt-6">
+      <div className="grid gap-4 md:grid-cols-2 mb-6">
         <Card>
           <CardHeader>
             <CardTitle>Customer Activity</CardTitle>
@@ -251,7 +292,7 @@ export default function DashboardPage() {
               className="h-[300px]"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={customerActivityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart data={dashboardData.customerActivity} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
@@ -294,7 +335,7 @@ export default function DashboardPage() {
               className="h-[300px]"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={conversionRateData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <BarChart data={dashboardData.conversionRate} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis domain={[0, 60]} />
@@ -308,7 +349,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Alerts and Recommendations */}
-      <div className="grid gap-4 lg:grid-cols-2 mt-6">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Top Recommendations</CardTitle>
@@ -316,7 +357,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {topRecommendations.map((rec) => (
+              {dashboardData.topRecommendations.map((rec) => (
                 <div key={rec.id} className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0">
                   <div className="space-y-1">
                     <div className="font-medium">{rec.product}</div>
@@ -342,7 +383,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {alerts.map((alert) => (
+              {dashboardData.alerts.map((alert) => (
                 <div key={alert.id} className="flex items-start gap-4 border-b pb-4 last:border-0 last:pb-0">
                   <div
                     className={`rounded-full p-2 ${

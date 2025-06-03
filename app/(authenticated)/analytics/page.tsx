@@ -26,6 +26,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { Download, Filter, PieChartIcon, BarChart3, TrendingUp } from "lucide-react"
 import { toast } from "sonner"
 import Cookies from 'js-cookie'
+import { exportToCSV } from "@/lib/utils"
 
 const COLORS = ["#2fb3b6", "#36b9c8", "#4dc4d8", "#65cfe8", "#7edaf8"]
 
@@ -47,14 +48,7 @@ export default function AnalyticsPage() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const token = Cookies.get('token')
-      if (!token) {
-        toast.error("Please login to view analytics")
-        return
-      }
-
       const headers = {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
 
@@ -83,7 +77,7 @@ export default function AnalyticsPage() {
       setCustomerSegmentData(segments)
 
       // Fetch product performance
-      const productsResponse = await fetch(`http://localhost:8000/analytics/product-performance?period=2023-Q2`, { headers })
+      const productsResponse = await fetch(`http://localhost:8000/analytics/product-performance?period=${selectedYear}-Q2`, { headers })
       if (!productsResponse.ok) {
         throw new Error('Failed to fetch product performance')
       }
@@ -91,7 +85,7 @@ export default function AnalyticsPage() {
       setProductPerformanceData(products)
 
       // Fetch regional performance
-      const regionsResponse = await fetch(`http://localhost:8000/analytics/regional-performance?period=2023-Q2`, { headers })
+      const regionsResponse = await fetch(`http://localhost:8000/analytics/regional-performance?period=${selectedYear}-Q2`, { headers })
       if (!regionsResponse.ok) {
         throw new Error('Failed to fetch regional performance')
       }
@@ -119,8 +113,28 @@ export default function AnalyticsPage() {
   }, [selectedYear])
 
   const handleExport = () => {
-    // Implement export
-    toast.info("Export functionality coming soon")
+    try {
+      switch (activeTab) {
+        case "overview":
+          // Export monthly trends and customer segments
+          exportToCSV(monthlyTrendsData, "monthly_trends");
+          exportToCSV(customerSegmentData, "customer_segments");
+          break;
+        case "customers":
+          exportToCSV(customerGrowthData, "customer_growth");
+          break;
+        case "products":
+          exportToCSV(productPerformanceData, "product_performance");
+          break;
+        case "regions":
+          exportToCSV(regionalPerformanceData, "regional_performance");
+          break;
+      }
+      toast.success("Data exported successfully");
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      toast.error("Failed to export data");
+    }
   }
 
   if (loading) {

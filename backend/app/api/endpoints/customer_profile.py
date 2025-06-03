@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from app.db.database import get_db
-from app.models.models import Customer, Transaction, User
+from app.models.models import Customer, Transaction, User, CustomerRecommendation, Product, Segment
 from app.schemas.schemas import CustomerProfile, UserResponse, Transaction as TransactionSchema
 
 router = APIRouter(
@@ -29,14 +29,28 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
     # Convert transactions to schema
     transaction_schemas = [TransactionSchema.from_orm(t) for t in transactions]
     
-    # Generate personalized recommendations based on customer data
-    recommendations = generate_recommendations(customer, user, transactions)
+    # Fetch recommendations from CustomerRecommendation table
+    recommendations = db.query(CustomerRecommendation).filter(
+        CustomerRecommendation.customer_id == customer_id
+    ).all()
+    
+    # Convert recommendations to the expected format
+    recommendation_list = []
+    for rec in recommendations:
+        product = db.query(Product).filter(Product.id == rec.product_id).first()
+        segment = db.query(Segment).filter(Segment.id == rec.segment_id).first()
+        if product and segment:
+            recommendation_list.append({
+                "title": product.name,
+                "description": rec.recommendation_reason,
+                "priority": "high" if rec.status == "accepted" else "medium"
+            })
     
     return {
         "customer": customer,
         "user": user_response,
         "transactions": transaction_schemas,
-        "recommendations": recommendations
+        "recommendations": recommendation_list
     }
 
 def generate_recommendations(customer: Customer, user: User, transactions: List[Transaction]) -> List[Dict[str, Any]]:

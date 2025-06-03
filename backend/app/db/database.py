@@ -1,17 +1,23 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
+from app.core.config import settings
+
+# Load environment variables
+load_dotenv()
 
 # Database configuration
-DATABASE_URL = "postgresql://postgres:ritesh123@localhost:5432/tawjihai_test"
+SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
 # Create SQLAlchemy engine
 engine = create_engine(
-    DATABASE_URL,
-    pool_size=5,  # Number of connections to keep open
-    max_overflow=10,  # Maximum number of connections that can be created beyond pool_size
-    pool_timeout=30,  # Seconds to wait before giving up on getting a connection from the pool
-    pool_recycle=1800,  # Recycle connections after 30 minutes
+    SQLALCHEMY_DATABASE_URL,
+    pool_size=20,
+    max_overflow=30,
+    pool_timeout=60,
+    pool_recycle=3600
 )
 
 # Create SessionLocal class

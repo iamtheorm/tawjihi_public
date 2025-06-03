@@ -12,7 +12,8 @@ from app.api.endpoints import (
     analytics,
     customers,
     customer_profile,
-    recommendations
+    recommendations,
+    dashboard
 )
 
 # Create database tables
@@ -51,6 +52,7 @@ app.include_router(customer_profile.router)
 app.include_router(recommendations.router)
 app.include_router(recommendations.segments_router)
 app.include_router(recommendations.products_router)
+app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root():

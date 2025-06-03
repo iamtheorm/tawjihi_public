@@ -25,6 +25,8 @@ import {
   Download, UserPlus, Trash2, Search, ArrowUpDown,
   CreditCard, MoreHorizontal, Filter, SlidersHorizontal
 } from "lucide-react"
+import { exportToCSV } from "@/lib/utils"
+import { toast } from "sonner"
 
 const ITEMS_PER_PAGE = 5
 
@@ -45,7 +47,11 @@ export default function CustomersPage() {
 
   const fetchCustomers = async () => {
     try {
-      const res = await fetch("http://localhost:8000/customers")
+      const res = await fetch("http://localhost:8000/customers", {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
       if (!res.ok) throw new Error("Failed to fetch customers")
       const data = await res.json()
       setCustomers(data)
@@ -116,6 +122,26 @@ export default function CustomersPage() {
     currentPage * ITEMS_PER_PAGE
   )
 
+  const handleExport = () => {
+    try {
+      // Export customers data
+      const exportData = customers.map(customer => ({
+        Name: customer.name,
+        Email: customer.email,
+        Account: customer.account,
+        Segment: customer.segment,
+        Status: customer.status,
+        Potential: customer.potential,
+        CreatedAt: new Date(customer.created_at).toLocaleDateString()
+      }));
+      exportToCSV(exportData, "customers");
+      toast.success("Customers exported successfully");
+    } catch (error) {
+      console.error('Error exporting customers:', error);
+      toast.error("Failed to export customers");
+    }
+  }
+
   if (loading) return <div>Loading customers...</div>
   if (error) return <div>Error loading customers: {error}</div>
 
@@ -124,7 +150,7 @@ export default function CustomersPage() {
       <div className="flex items-center justify-between">
         <h1 className="page-title">Customer Management</h1>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>

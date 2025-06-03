@@ -25,6 +25,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { exportToCSV } from "@/lib/utils"
+import { toast } from "react-hot-toast"
 
 const iconMap: Record<string, React.ElementType> = {
   CreditCard,
@@ -190,6 +192,23 @@ const handleViewCustomers = async (segment: string) => {
   }
 };
 
+const handleExport = () => {
+  try {
+    // Export recommendations data
+    const exportData = recommendations.map(rec => ({
+      Product: rec.product.name,
+      Segment: rec.segment.name,
+      Potential: rec.potential,
+      CustomerCount: rec.customer_count,
+      ConversionRate: `${rec.conversion_rate}%`
+    }));
+    exportToCSV(exportData, "recommendations");
+    toast.success("Recommendations exported successfully");
+  } catch (error) {
+    console.error('Error exporting recommendations:', error);
+    toast.error("Failed to export recommendations");
+  }
+}
 
   return (
     <div className="w-[1400px]">
@@ -199,7 +218,7 @@ const handleViewCustomers = async (segment: string) => {
           <p className="page-description">View system-wide product suggestions by category or customer segment</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>

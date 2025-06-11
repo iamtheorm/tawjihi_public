@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { useDebounce } from "@/hooks/useDebounce"
 import {
   Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle
 } from "@/components/ui/card"
@@ -25,7 +26,6 @@ import {
   Download, UserPlus, Trash2, Search, ArrowUpDown,
   CreditCard, MoreHorizontal, Filter, SlidersHorizontal
 } from "lucide-react"
-import { exportToCSV } from "@/lib/utils"
 import { toast } from "sonner"
 
 const ITEMS_PER_PAGE = 5
@@ -36,8 +36,10 @@ export default function CustomersPage() {
   const [customers, setCustomers] = React.useState<any[]>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
+  const [totalCustomers, setTotalCustomers] = React.useState(0)
 
   const [searchTerm, setSearchTerm] = React.useState("")
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const [segmentFilter, setSegmentFilter] = React.useState("all")
   const [regionFilter, setRegionFilter] = React.useState("all")
   const [statusFilter, setStatusFilter] = React.useState("all")
@@ -47,24 +49,69 @@ export default function CustomersPage() {
 
   const fetchCustomers = async () => {
     try {
-      const res = await fetch("http://localhost:8000/customers", {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      if (!res.ok) throw new Error("Failed to fetch customers")
-      const data = await res.json()
+      setLoading(true)
+      const page = Math.max(1, currentPage)
+      const skip = (page - 1) * ITEMS_PER_PAGE
+      const limit = ITEMS_PER_PAGE
+
+      let url = `http://localhost:8000/customers/?skip=${skip}&limit=${limit}`
+      
+      if (debouncedSearchTerm) url += `&search=${encodeURIComponent(debouncedSearchTerm)}`
+      if (segmentFilter !== 'all') url += `&segment=${encodeURIComponent(segmentFilter)}`
+      if (statusFilter !== 'all') url += `&status=${encodeURIComponent(statusFilter)}`
+      if (potentialFilter !== 'all') url += `&potential=${encodeURIComponent(potentialFilter)}`
+
+      const [customersRes, countRes] = await Promise.all([
+        fetch(url, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          cache: 'no-store'
+        }),
+        fetch("http://localhost:8000/customers/count/", {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+      ])
+      
+      if (!customersRes.ok) {
+        const errorData = await customersRes.json()
+        throw new Error(errorData.detail || "Failed to fetch customers")
+      }
+      
+      const data = await customersRes.json()
+      console.log("Fetched customers:", data)
       setCustomers(data)
+      
+      if (countRes.ok) {
+        const countData = await countRes.json()
+        setTotalCustomers(countData.total)
+      }
     } catch (err: any) {
+      console.error("Error fetching customers:", err)
       setError(err.message || "Unknown error")
+      toast.error(err.message || "Failed to fetch customers")
     } finally {
       setLoading(false)
     }
   }
 
+  const fetchRef = React.useRef<(() => Promise<void>) | null>(null)
+
   React.useEffect(() => {
-    fetchCustomers()
-  }, [])
+    if (currentPage < 1) {
+      setCurrentPage(1)
+      return
+    }
+
+    if (fetchRef.current) {
+      fetchRef.current = null
+    }
+
+    fetchRef.current = fetchCustomers
+    fetchRef.current()
+  }, [currentPage, debouncedSearchTerm, segmentFilter, statusFilter, potentialFilter])
 
   const toggleCustomer = (customerId: string) => {
     setSelectedCustomers((prev) =>
@@ -116,30 +163,18 @@ export default function CustomersPage() {
     return matchesSearch && matchesSegment && matchesRegion && matchesStatus && matchesPotential
   })
 
-  const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE)
-  const paginatedCustomers = filteredCustomers.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  )
+  const totalPages = Math.ceil(totalCustomers / ITEMS_PER_PAGE)
+  const paginatedCustomers = customers
 
-  const handleExport = () => {
-    try {
-      // Export customers data
-      const exportData = customers.map(customer => ({
-        Name: customer.name,
-        Email: customer.email,
-        Account: customer.account,
-        Segment: customer.segment,
-        Status: customer.status,
-        Potential: customer.potential,
-        CreatedAt: new Date(customer.created_at).toLocaleDateString()
-      }));
-      exportToCSV(exportData, "customers");
-      toast.success("Customers exported successfully");
-    } catch (error) {
-      console.error('Error exporting customers:', error);
-      toast.error("Failed to export customers");
-    }
+  console.log("Total customers:", customers.length)
+  console.log("Filtered customers:", filteredCustomers.length)
+  console.log("Current page:", currentPage)
+  console.log("Total pages:", totalPages)
+  console.log("Paginated customers:", paginatedCustomers.length)
+
+  const handlePageChange = (newPage: number) => {
+    const validPage = Math.max(1, Math.min(newPage, totalPages))
+    setCurrentPage(validPage)
   }
 
   if (loading) return <div>Loading customers...</div>
@@ -150,7 +185,7 @@ export default function CustomersPage() {
       <div className="flex items-center justify-between">
         <h1 className="page-title">Customer Management</h1>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={handleExport}>
+          <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
@@ -180,6 +215,7 @@ export default function CustomersPage() {
                   className="pl-8 sm:w-[300px]"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={(e) => e.target.select()}
                 />
               </div>
               <DropdownMenu>
@@ -301,7 +337,7 @@ export default function CustomersPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{customer.account}</TableCell> 
+                    <TableCell>{customer.account}</TableCell>
                     <TableCell>{customer.segment}</TableCell>
                     <TableCell>
                       <Badge className={
@@ -360,7 +396,7 @@ export default function CustomersPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
               Previous
@@ -368,7 +404,7 @@ export default function CustomersPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
               Next
@@ -382,6 +418,7 @@ export default function CustomersPage() {
         onClose={() => setIsAddModalOpen(false)}
         onAdd={async () => {
           await fetchCustomers()
+          setCurrentPage(1) // Reset to first page after adding
           setIsAddModalOpen(false)
         }}
       />

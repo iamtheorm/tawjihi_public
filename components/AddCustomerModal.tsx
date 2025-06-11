@@ -6,6 +6,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface AddCustomerModalProps {
   open: boolean
@@ -21,36 +29,78 @@ export default function AddCustomerModal({ open, onClose, onAdd }: AddCustomerMo
   const [status, setStatus] = useState("")
   const [recommendation, setRecommendation] = useState("")
   const [potential, setPotential] = useState("")
-  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const validateForm = () => {
+    if (!name.trim()) {
+      toast.error("Name is required")
+      return false
+    }
+    if (!email.trim()) {
+      toast.error("Email is required")
+      return false
+    }
+    if (!account.trim()) {
+      toast.error("Account is required")
+      return false
+    }
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address")
+      return false
+    }
+    return true
+  }
 
   const handleAdd = async () => {
+    if (!validateForm()) return
+
+    setIsLoading(true)
     try {
-      const res = await fetch("http://localhost:8000/customers", {
+      const customerData = {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        account: account.trim(),
+        segment: segment.trim(),
+        status: status.trim(),
+        recommendation: recommendation.trim(),
+        potential: potential.trim(),
+      }
+
+      console.log("Sending customer data:", customerData) // Debug log
+
+      const res = await fetch("http://localhost:8000/customers/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          email,
-          account,
-          segment,
-          status,
-          recommendation,
-          potential,
-        }),
+        body: JSON.stringify(customerData),
       })
 
+      const data = await res.json()
+      console.log("Response from server:", data) // Debug log
+
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.detail || "Failed to add customer")
+        throw new Error(data.detail || "Failed to add customer")
       }
 
+      toast.success("Customer added successfully")
       onAdd()
       onClose()
+      // Reset form
+      setName("")
+      setEmail("")
+      setAccount("")
+      setSegment("")
+      setStatus("")
+      setRecommendation("")
+      setPotential("")
     } catch (err: any) {
-      console.error(err)
-      setError(err.message || "Something went wrong")
+      console.error("Error adding customer:", err)
+      toast.error(err.message || "Something went wrong")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -62,39 +112,86 @@ export default function AddCustomerModal({ open, onClose, onAdd }: AddCustomerMo
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div>
-            <Label>Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Label>Name *</Label>
+            <Input 
+              value={name} 
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter customer name"
+              required
+            />
           </div>
           <div>
-            <Label>Email</Label>
-            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Label>Email *</Label>
+            <Input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter customer email"
+              required
+            />
           </div>
           <div>
-            <Label>Account</Label>
-            <Input value={account} onChange={(e) => setAccount(e.target.value)} />
+            <Label>Account *</Label>
+            <Input 
+              value={account} 
+              onChange={(e) => setAccount(e.target.value)}
+              placeholder="Enter account number"
+              required
+            />
           </div>
           <div>
             <Label>Segment</Label>
-            <Input value={segment} onChange={(e) => setSegment(e.target.value)} />
+            <Input 
+              value={segment} 
+              onChange={(e) => setSegment(e.target.value)}
+              placeholder="Enter customer segment"
+            />
           </div>
           <div>
             <Label>Status</Label>
-            <Input value={status} onChange={(e) => setStatus(e.target.value)} />
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">active</SelectItem>
+                <SelectItem value="dormant">dormant</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label>Recommendation</Label>
-            <Input value={recommendation} onChange={(e) => setRecommendation(e.target.value)} />
+            <Select value={recommendation} onValueChange={setRecommendation}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select recommendation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Low">Low</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label>Potential</Label>
-            <Input value={potential} onChange={(e) => setPotential(e.target.value)} />
+            <Select value={potential} onValueChange={setPotential}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select potential" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Low">Low</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
         <DialogFooter>
-          <Button onClick={handleAdd}>Add</Button>
+          <Button onClick={handleAdd} disabled={isLoading}>
+            {isLoading ? "Adding..." : "Add"}
+          </Button>
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>

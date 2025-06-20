@@ -27,6 +27,7 @@ import { Download, Filter, PieChartIcon, BarChart3, TrendingUp } from "lucide-re
 import { toast } from "sonner"
 import Cookies from 'js-cookie'
 import { exportToCSV } from "@/lib/utils"
+import { baseUrl } from "@/lib/api"
 
 const COLORS = ["#2fb3b6", "#36b9c8", "#4dc4d8", "#65cfe8", "#7edaf8"]
 
@@ -53,7 +54,7 @@ export default function AnalyticsPage() {
       }
 
       // Fetch summary data
-      const summaryResponse = await fetch('http://localhost:8000/analytics/summary', { headers })
+      const summaryResponse = await fetch(`${baseUrl}/analytics/summary`, { headers })
       if (!summaryResponse.ok) {
         throw new Error('Failed to fetch summary data')
       }
@@ -61,7 +62,7 @@ export default function AnalyticsPage() {
       setSummaryData(summary)
 
       // Fetch monthly trends
-      const trendsResponse = await fetch(`http://localhost:8000/analytics/monthly-trends?year=${selectedYear}`, { headers })
+      const trendsResponse = await fetch(`${baseUrl}/analytics/monthly-trends?year=${selectedYear}`, { headers })
       if (!trendsResponse.ok) {
         throw new Error('Failed to fetch monthly trends')
       }
@@ -69,7 +70,7 @@ export default function AnalyticsPage() {
       setMonthlyTrendsData(trends)
 
       // Fetch customer segments
-      const segmentsResponse = await fetch('http://localhost:8000/analytics/customer-segments', { headers })
+      const segmentsResponse = await fetch(`${baseUrl}/analytics/customer-segments`, { headers })
       if (!segmentsResponse.ok) {
         throw new Error('Failed to fetch customer segments')
       }
@@ -77,7 +78,7 @@ export default function AnalyticsPage() {
       setCustomerSegmentData(segments)
 
       // Fetch product performance
-      const productsResponse = await fetch(`http://localhost:8000/analytics/product-performance?period=${selectedYear}-Q2`, { headers })
+      const productsResponse = await fetch(`${baseUrl}/analytics/product-performance?period=${selectedYear}-Q2`, { headers })
       if (!productsResponse.ok) {
         throw new Error('Failed to fetch product performance')
       }
@@ -85,7 +86,7 @@ export default function AnalyticsPage() {
       setProductPerformanceData(products)
 
       // Fetch regional performance
-      const regionsResponse = await fetch(`http://localhost:8000/analytics/regional-performance?period=${selectedYear}-Q2`, { headers })
+      const regionsResponse = await fetch(`${baseUrl}/analytics/regional-performance?period=${selectedYear}-Q2`, { headers })
       if (!regionsResponse.ok) {
         throw new Error('Failed to fetch regional performance')
       }
@@ -93,7 +94,7 @@ export default function AnalyticsPage() {
       setRegionalPerformanceData(regions)
 
       // Fetch customer growth
-      const growthResponse = await fetch(`http://localhost:8000/analytics/customer-growth?year=${selectedYear}`, { headers })
+      const growthResponse = await fetch(`${baseUrl}/analytics/customer-growth?year=${selectedYear}`, { headers })
       if (!growthResponse.ok) {
         throw new Error('Failed to fetch customer growth')
       }

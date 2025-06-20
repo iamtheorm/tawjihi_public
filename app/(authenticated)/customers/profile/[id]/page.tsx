@@ -37,6 +37,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { baseUrl } from "@/lib/api"
 
 // Sample data for features not yet implemented in backend
 const transactionData = [
@@ -93,7 +94,7 @@ export default function CustomerProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/customer-profile/${customerId}`);
+        const response = await axios.get(`${baseUrl}/customer-profile/${customerId}`);
         setProfile(response.data);
       } catch (err: any) {
         setError(err.message);

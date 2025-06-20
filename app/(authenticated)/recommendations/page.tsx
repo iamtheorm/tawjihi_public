@@ -27,6 +27,7 @@ import { Progress } from "@/components/ui/progress"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { exportToCSV } from "@/lib/utils"
 import { toast } from "react-hot-toast"
+import { baseUrl } from "@/lib/api"
 
 const iconMap: Record<string, React.ElementType> = {
   CreditCard,
@@ -81,8 +82,8 @@ const [openModal, setOpenModal] = useState(false);
 useEffect(() => {
   async function fetchDropdowns() {
     const [segmentRes, productRes] = await Promise.all([
-      fetch("http://localhost:8000/segments/"),
-      fetch("http://localhost:8000/products/"),
+      fetch(`${baseUrl}/segments/`),
+      fetch(`${baseUrl}/products/`),
     ]);
 
     if (segmentRes.ok) {
@@ -106,7 +107,7 @@ useEffect(() => {
 
 const handleSchedule = async () => {
   try {
-    const res = await fetch("http://localhost:8000/recommendations/campaigns/", {
+    const res = await fetch(`${baseUrl}/recommendations/campaigns/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -151,7 +152,7 @@ const currentRecommendations = filteredRecommendations.slice(
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:8000/recommendations/")
+        const res = await fetch(`${baseUrl}/recommendations/`)
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`)
         }
@@ -180,7 +181,7 @@ const handleViewCustomers = async (segment: string) => {
     setSelectedSegmentCard(segment);
     setLoadingCustomers(true);
 
-    const res = await fetch(`/api/customers?segment=${encodeURIComponent(segment)}`);
+    const res = await fetch(`${baseUrl}/customers?segment=${encodeURIComponent(segment)}`);
     const data = await res.json();
 
     setSegmentCustomers(data);
@@ -199,8 +200,8 @@ const handleExport = () => {
       Product: rec.product.name,
       Segment: rec.segment.name,
       Potential: rec.potential,
-      CustomerCount: rec.customer_count,
-      ConversionRate: `${rec.conversion_rate}%`
+      CustomerCount: rec.customerCount,
+      ConversionRate: `${rec.conversionRate}%`
     }));
     exportToCSV(exportData, "recommendations");
     toast.success("Recommendations exported successfully");

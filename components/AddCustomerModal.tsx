@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { baseUrl } from "@/lib/api"
 
 interface AddCustomerModalProps {
   open: boolean
@@ -70,7 +71,7 @@ export default function AddCustomerModal({ open, onClose, onAdd }: AddCustomerMo
 
       console.log("Sending customer data:", customerData) // Debug log
 
-      const res = await fetch("http://localhost:8000/customers/", {
+      const res = await fetch(`${baseUrl}/customers/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

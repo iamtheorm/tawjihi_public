@@ -27,6 +27,7 @@ import {
   CreditCard, MoreHorizontal, Filter, SlidersHorizontal
 } from "lucide-react"
 import { toast } from "sonner"
+import { baseUrl } from "@/lib/api"
 
 const ITEMS_PER_PAGE = 5
 
@@ -54,7 +55,7 @@ export default function CustomersPage() {
       const skip = (page - 1) * ITEMS_PER_PAGE
       const limit = ITEMS_PER_PAGE
 
-      let url = `http://localhost:8000/customers/?skip=${skip}&limit=${limit}`
+      let url = `${baseUrl}/customers/?skip=${skip}&limit=${limit}`
       
       if (debouncedSearchTerm) url += `&search=${encodeURIComponent(debouncedSearchTerm)}`
       if (segmentFilter !== 'all') url += `&segment=${encodeURIComponent(segmentFilter)}`
@@ -68,7 +69,7 @@ export default function CustomersPage() {
           },
           cache: 'no-store'
         }),
-        fetch("http://localhost:8000/customers/count/", {
+        fetch(`${baseUrl}/customers/count/`, {
           headers: {
             'Content-Type': 'application/json'
           }

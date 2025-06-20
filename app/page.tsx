@@ -27,8 +27,13 @@ import {
 import { ModeToggle } from "@/components/mode-toggle"
 import { toast } from "sonner"
 import Cookies from 'js-cookie'
+import { redirect } from "next/navigation"
+import { baseUrl } from "@/lib/api"
 
 export default function LoginPage() {
+  // TEMPORARY: Always redirect to dashboard
+  redirect("/dashboard");
+
   const router = useRouter()
   const [loading, setLoading] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
@@ -55,7 +60,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const response = await fetch("http://localhost:8000/auth/login", {
+      const response = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

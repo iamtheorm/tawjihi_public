@@ -56,4 +56,4 @@ app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root():
-    return {"message": "Welcome to Tawjih API"}
+    return {"message": "Welcome to Tawjih API"} 

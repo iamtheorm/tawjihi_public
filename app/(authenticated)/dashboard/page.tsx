@@ -12,6 +12,7 @@ import Cookies from 'js-cookie'
 import { useState, useEffect } from "react"
 import axios from 'axios'
 import { exportToCSV } from "@/lib/utils"
+import { baseUrl } from "@/lib/api"
 
 interface DashboardSummary {
   activeCustomers: number
@@ -83,7 +84,7 @@ export default function DashboardPage() {
       }
 
       // Fetch dashboard summary
-      const summaryResponse = await axios.get('http://localhost:8000/dashboard/overview', { headers })
+      const summaryResponse = await axios.get(`${baseUrl}/dashboard/overview`, { headers })
       setDashboardData(prev => ({
         ...prev,
         summary: {
@@ -95,28 +96,28 @@ export default function DashboardPage() {
       }))
 
       // Fetch customer activity
-      const activityResponse = await axios.get('http://localhost:8000/dashboard/customer-activity', { headers })
+      const activityResponse = await axios.get(`${baseUrl}/dashboard/customer-activity`, { headers })
       setDashboardData(prev => ({
         ...prev,
         customerActivity: activityResponse.data
       }))
 
       // Fetch conversion rate
-      const conversionResponse = await axios.get('http://localhost:8000/dashboard/conversion-rates', { headers })
+      const conversionResponse = await axios.get(`${baseUrl}/dashboard/conversion-rates`, { headers })
       setDashboardData(prev => ({
         ...prev,
         conversionRate: conversionResponse.data
       }))
 
       // Fetch top recommendations
-      const recommendationsResponse = await axios.get('http://localhost:8000/dashboard/top-recommendations', { headers })
+      const recommendationsResponse = await axios.get(`${baseUrl}/dashboard/top-recommendations`, { headers })
       setDashboardData(prev => ({
         ...prev,
         topRecommendations: recommendationsResponse.data
       }))
 
       // Fetch alerts
-      const alertsResponse = await axios.get('http://localhost:8000/dashboard/alerts', { headers })
+      const alertsResponse = await axios.get(`${baseUrl}/dashboard/alerts`, { headers })
       setDashboardData(prev => ({
         ...prev,
         alerts: alertsResponse.data

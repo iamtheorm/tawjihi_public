@@ -22,10 +22,16 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import AddCustomerModal from "@/components/AddCustomerModal"
+<<<<<<< HEAD
 import CSVUploadModal from "@/components/CSVUploadModal"
 import {
   Download, UserPlus, Trash2, Search, ArrowUpDown,
   CreditCard, MoreHorizontal, Filter, SlidersHorizontal, Upload
+=======
+import {
+  Download, UserPlus, Trash2, Search, ArrowUpDown,
+  CreditCard, MoreHorizontal, Filter, SlidersHorizontal
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
 } from "lucide-react"
 import { toast } from "sonner"
 import { baseUrl } from "@/lib/api"
@@ -39,6 +45,10 @@ export default function CustomersPage() {
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
   const [totalCustomers, setTotalCustomers] = React.useState(0)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
   const [searchTerm, setSearchTerm] = React.useState("")
   const debouncedSearchTerm = useDebounce(searchTerm, 500)
   const [segmentFilter, setSegmentFilter] = React.useState("all")
@@ -47,7 +57,10 @@ export default function CustomersPage() {
   const [potentialFilter, setPotentialFilter] = React.useState("all")
   const [currentPage, setCurrentPage] = React.useState(1)
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false)
+<<<<<<< HEAD
   const [isCSVModalOpen, setIsCSVModalOpen] = React.useState(false)
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
 
   const fetchCustomers = async () => {
     try {
@@ -185,12 +198,18 @@ export default function CustomersPage() {
   return (
     <div className="w-[1400px]">
       <div className="flex items-center justify-between">
+<<<<<<< HEAD
         <h1 className="page-title">Customer Management</h1>        <div className="flex items-center gap-2">
+=======
+        <h1 className="page-title">Customer Management</h1>
+        <div className="flex items-center gap-2">
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
           <Button variant="outline">
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
           <Button
+<<<<<<< HEAD
             variant="outline"
             onClick={() => setIsCSVModalOpen(true)}
           >
@@ -198,6 +217,8 @@ export default function CustomersPage() {
             Upload CSV
           </Button>
           <Button
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
             className="bg-banking-500 hover:bg-banking-600"
             onClick={() => setIsAddModalOpen(true)}
           >
@@ -419,7 +440,13 @@ export default function CustomersPage() {
             </Button>
           </div>
         </CardFooter>
+<<<<<<< HEAD
       </Card>      <AddCustomerModal
+=======
+      </Card>
+
+      <AddCustomerModal
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onAdd={async () => {
@@ -428,6 +455,7 @@ export default function CustomersPage() {
           setIsAddModalOpen(false)
         }}
       />
+<<<<<<< HEAD
       
       <CSVUploadModal
         open={isCSVModalOpen}
@@ -438,6 +466,8 @@ export default function CustomersPage() {
           setIsCSVModalOpen(false)
         }}
       />
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
     </div>
   )
 }

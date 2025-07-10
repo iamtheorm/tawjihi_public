@@ -28,10 +28,18 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
     
     # Convert transactions to schema
     transaction_schemas = [TransactionSchema.from_orm(t) for t in transactions]
+<<<<<<< HEAD
       # Fetch recommendations from CustomerRecommendation table (including AI-generated ones)
     recommendations = db.query(CustomerRecommendation).filter(
         CustomerRecommendation.customer_id == customer_id
     ).order_by(CustomerRecommendation.priority, CustomerRecommendation.confidence_score.desc()).all()
+=======
+    
+    # Fetch recommendations from CustomerRecommendation table
+    recommendations = db.query(CustomerRecommendation).filter(
+        CustomerRecommendation.customer_id == customer_id
+    ).all()
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
     
     # Convert recommendations to the expected format
     recommendation_list = []
@@ -39,6 +47,7 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
         product = db.query(Product).filter(Product.id == rec.product_id).first()
         segment = db.query(Segment).filter(Segment.id == rec.segment_id).first()
         if product and segment:
+<<<<<<< HEAD
             # Determine priority based on confidence score and status
             if rec.confidence_score and rec.confidence_score >= 0.8:
                 priority = "high"
@@ -55,6 +64,12 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
                 "status": rec.status,
                 "segment": segment.name,
                 "recommended_at": rec.recommended_at
+=======
+            recommendation_list.append({
+                "title": product.name,
+                "description": rec.recommendation_reason,
+                "priority": "high" if rec.status == "accepted" else "medium"
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
             })
     
     return {

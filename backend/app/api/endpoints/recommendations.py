@@ -5,6 +5,7 @@ from app.models import models
 from app.schemas import schemas
 from app.db.database import get_db
 from sqlalchemy import func, and_
+<<<<<<< HEAD
 from app.services.ai_recommendations import ai_service
 import logging
 from datetime import datetime
@@ -12,6 +13,13 @@ from datetime import datetime
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+=======
+# import logging
+
+# # Configure logging
+# logging.basicConfig(level=logging.WARNING)
+# logger = logging.getLogger(__name__)
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
 
 # Main recommendations router
 router = APIRouter(
@@ -152,6 +160,7 @@ def get_campaigns(
     db: Session = Depends(get_db)
 ):
     return db.query(models.Campaign).offset(skip).limit(limit).all()
+<<<<<<< HEAD
 
 # AI Recommendations Endpoints
 @router.post("/generate/{customer_id}")
@@ -355,3 +364,5 @@ async def generate_recommendations_for_all_customers(db: Session = Depends(get_d
     except Exception as e:
         logger.error(f"Error in bulk recommendation generation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating bulk recommendations: {str(e)}")
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce

@@ -20,6 +20,7 @@ class MaritalStatus(str, enum.Enum):
     DIVORCED = "DIVORCED"
     WIDOWED = "WIDOWED"
 
+<<<<<<< HEAD
 # New Enums for CSV fields
 class EmploymentType(str, enum.Enum):
     RETIRED = "Retired"
@@ -94,6 +95,8 @@ class DigitalChannelPreference(str, enum.Enum):
     MOBILE = "Mobile"
     WEB = "Web"
 
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
 class Auth(Base):
     __tablename__ = "auth"
 
@@ -117,6 +120,7 @@ class Customer(Base):
     status = Column(String, nullable=True)
     recommendation = Column(String, nullable=True)
     potential = Column(String, nullable=True)
+<<<<<<< HEAD
     
     # Additional CSV fields
     age = Column(Integer, nullable=True)
@@ -153,6 +157,8 @@ class Customer(Base):
     avg_days_abroad_per_year = Column(Integer, nullable=True)
     digital_channel_preference = Column(Enum(DigitalChannelPreference), nullable=True)
     
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -233,9 +239,12 @@ class CustomerRecommendation(Base):
     segment_id = Column(Integer, ForeignKey("segments.id"), nullable=False)
     recommendation_reason = Column(String, nullable=True)
     status = Column(String, nullable=True)
+<<<<<<< HEAD
     confidence_score = Column(Float, nullable=True)
     priority = Column(String, nullable=True)
     recommended_at = Column(DateTime, default=datetime.utcnow)
+=======
+>>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
     created_at = Column(DateTime, default=datetime.utcnow)
 
     customer = relationship("Customer", back_populates="customer_recommendations")

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Dependencies
 /node_modules/
 /.pnp
@@ -45,36 +44,11 @@ Thumbs.db
 # Database files
 *.sqlite
 *.db
-=======
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files
-
-# Ignore model file
-backend/model/model.pkl
-backend\model\model.pkl
-backend/model/model.pkl
-backend/model
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
+*.pkl
+*.h5
+*.pt
+*.zip
+*.tar
+*.ckpt
+*.onnx
+*.exe

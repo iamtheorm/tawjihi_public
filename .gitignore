@@ -66,6 +66,9 @@ yarn-error.log*
 
 # env files
 
+# Ignore model file
+backend/model/model.pkl
+
 
 # vercel
 .vercel

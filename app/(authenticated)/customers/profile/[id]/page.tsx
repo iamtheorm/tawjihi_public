@@ -90,7 +90,6 @@ export default function CustomerProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-<<<<<<< HEAD
   const [generatingRecommendations, setGeneratingRecommendations] = useState(false);
 
   const fetchProfile = async () => {
@@ -121,20 +120,6 @@ export default function CustomerProfilePage() {
   };
 
   useEffect(() => {
-=======
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/customer-profile/${customerId}`);
-        setProfile(response.data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
     fetchProfile();
   }, [customerId]);
 
@@ -371,7 +356,6 @@ export default function CustomerProfilePage() {
               </TabsContent>
 
               <TabsContent value="recommendations" className="m-0 space-y-6 p-6">
-<<<<<<< HEAD
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-semibold">AI-Powered Recommendations</h3>
@@ -389,10 +373,6 @@ export default function CustomerProfilePage() {
                 </div>
                 <div className="space-y-4">
                   {recommendations && recommendations.length > 0 ? recommendations.map((rec: any, index: number) => (
-=======
-                <div className="space-y-4">
-                  {recommendations.map((rec: any, index: number) => (
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
                     <Card key={index} className="overflow-hidden">
                       <div className="flex flex-col md:flex-row">
                         <div className="flex-1 p-6">
@@ -419,7 +399,6 @@ export default function CustomerProfilePage() {
                           </div>
                         </div>
                         <div className="flex w-full flex-col justify-between border-l bg-muted/30 p-6 md:w-1/3">
-<<<<<<< HEAD
                           <div className="space-y-2">                            <div className="text-sm font-medium">AI Confidence Score</div>
                             <div className="flex items-center gap-2">
                               <Progress
@@ -433,20 +412,6 @@ export default function CustomerProfilePage() {
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {rec.segment ? `AI Generated • ${rec.segment}` : "Based on customer segment and behavior"}
-=======
-                          <div className="space-y-2">
-                            <div className="text-sm font-medium">Likelihood to Convert</div>
-                            <div className="flex items-center gap-2">
-                              <Progress
-                                value={rec.priority === "high" ? 90 : 70}
-                                className="h-2 flex-1 bg-banking-100"
-                                indicatorClassName="bg-banking-500"
-                              />
-                              <span className="text-sm font-medium">{rec.priority === "high" ? "90%" : "70%"}</span>
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              Based on customer segment and behavior
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
                             </div>
                           </div>
 
@@ -461,15 +426,11 @@ export default function CustomerProfilePage() {
                         </div>
                       </div>
                     </Card>
-<<<<<<< HEAD
                   )) : (
                     <div className="text-center py-6 text-sm text-muted-foreground">
                       No recommendations available. Click "Generate New Recommendations" to receive suggestions.
                     </div>
                   )}
-=======
-                  ))}
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
                 </div>
               </TabsContent>
 
@@ -545,8 +506,4 @@ export default function CustomerProfilePage() {
       </div>
     </div>
   );
-<<<<<<< HEAD
 }
-=======
-} 
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce

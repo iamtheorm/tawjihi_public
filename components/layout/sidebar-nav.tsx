@@ -36,14 +36,6 @@ const navItems = [
     icon: Users,
   },
   {
-<<<<<<< HEAD
-=======
-    title: "Customer Profile",
-    href: "/customers/profile",
-    icon: UserCircle,
-  },
-  {
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
     title: "Product Recommendations",
     href: "/recommendations",
     icon: CreditCard,

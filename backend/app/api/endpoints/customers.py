@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
-=======
-from fastapi import APIRouter, Depends, HTTPException, Query
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func
 from typing import List, Optional
 import logging
-<<<<<<< HEAD
 import csv
 import io
 import pandas as pd
@@ -17,12 +12,6 @@ from app.db.database import get_db
 from app.models.models import Customer, CustomerRecommendation, Product, Segment
 from app.schemas.schemas import Customer as CustomerSchema, CustomerCreate, CSVUploadResponse
 from app.services.recommendation_service import recommendation_service
-=======
-
-from app.db.database import get_db
-from app.models.models import Customer
-from app.schemas.schemas import Customer as CustomerSchema, CustomerCreate
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -117,28 +106,16 @@ async def create_customer(customer: CustomerCreate, db: Session = Depends(get_db
         
         if existing_customer:
             logger.warning(f"Customer with email {customer.email} already exists")
-<<<<<<< HEAD
             raise HTTPException(status_code=400, detail="Customer with this email already exists.")        # Convert email to lowercase before saving
         customer_data = customer.dict()
         customer_data['email'] = customer_data['email'].lower()
-=======
-            raise HTTPException(status_code=400, detail="Customer with this email already exists.")
-
-        # Convert email to lowercase before saving
-        customer_data = customer.dict()
-        customer_data['email'] = customer_data['email'].lower()
-        
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
         db_customer = Customer(**customer_data)
         db.add(db_customer)
         db.commit()
         db.refresh(db_customer)
         
-<<<<<<< HEAD
         logger.info(f"Successfully created customer: {db_customer.name}")
         
-=======
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce
         logger.info(f"Successfully created customer with ID: {db_customer.id}")
         return db_customer
     except Exception as e:
@@ -200,7 +177,6 @@ async def delete_customer(customer_id: int, db: Session = Depends(get_db)):
         db.delete(customer)
         db.commit()
         logger.info(f"Successfully deleted customer with ID: {customer_id}")
-<<<<<<< HEAD
         return {"message": f"Customer {customer_id} deleted successfully"}
     except Exception as e:
         logger.error(f"Error deleting customer: {str(e)}")
@@ -471,10 +447,3 @@ async def generate_and_store_recommendations(customer: Customer, db: Session):
     except Exception as e:
         logger.error(f"Error generating recommendations for customer {customer.id}: {str(e)}")
         db.rollback()
-=======
-        return {"message": "Customer deleted successfully"}
-    except Exception as e:
-        logger.error(f"Error deleting customer: {str(e)}")
-        db.rollback()
-        raise 
->>>>>>> 862642420b4455b7edb635a13b1c4b2b62d5a1ce

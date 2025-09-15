@@ -1,7 +1,12 @@
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
-from app.models.models import EmploymentStatus, MaritalStatus
+from app.models.models import (
+    EmploymentStatus, MaritalStatus, EmploymentType, MaritalStatusCSV, 
+    ResidenceStatus, Nationality, Religion, AccountType, YesNo, 
+    RiskTolerance, EducationLevel, Gender, OccupationSector, 
+    DigitalChannelPreference
+)
 from enum import Enum
 
 # Auth Schemas
@@ -77,6 +82,41 @@ class CustomerBase(BaseModel):
     status: Optional[str] = None
     recommendation: Optional[str] = None
     potential: Optional[str] = None
+    
+    # Additional CSV fields
+    age: Optional[int] = None
+    income_omr: Optional[float] = None
+    employment_type: Optional[EmploymentType] = None
+    credit_score: Optional[int] = None
+    account_tenure_months: Optional[int] = None
+    marital_status_csv: Optional[MaritalStatusCSV] = None
+    number_of_children: Optional[int] = None
+    digital_engagement_score: Optional[int] = None
+    residence_status: Optional[ResidenceStatus] = None
+    nationality: Optional[Nationality] = None
+    religion: Optional[Religion] = None
+    account_type: Optional[AccountType] = None
+    vehicle_owner: Optional[YesNo] = None
+    drivers_license: Optional[YesNo] = None
+    monthly_groceries_spend: Optional[float] = None
+    international_travel_frequency: Optional[int] = None
+    risk_tolerance: Optional[RiskTolerance] = None
+    student_status: Optional[YesNo] = None
+    employer_insurance: Optional[YesNo] = None
+    debt_to_income: Optional[float] = None
+    business_account_owner: Optional[YesNo] = None
+    already_has_products: Optional[int] = None
+    do_not_need_products: Optional[int] = None
+    recent_transactions: Optional[int] = None
+    education_level: Optional[EducationLevel] = None
+    gender: Optional[Gender] = None
+    occupation_sector: Optional[OccupationSector] = None
+    health_score: Optional[int] = None
+    property_value_omr: Optional[float] = None
+    vehicle_value_omr: Optional[float] = None
+    credit_utilization_pct: Optional[float] = None
+    avg_days_abroad_per_year: Optional[int] = None
+    digital_channel_preference: Optional[DigitalChannelPreference] = None
 
 class CustomerCreate(CustomerBase):
     pass
@@ -88,6 +128,14 @@ class Customer(CustomerBase):
 
     class Config:
         from_attributes = True
+
+# CSV Upload Schemas
+class CSVUploadResponse(BaseModel):
+    message: str
+    total_rows: int
+    successful_imports: int
+    failed_imports: int
+    errors: List[Dict[str, Any]] = []
 
 class UserProfile(BaseModel):
     industry: Optional[str] = None

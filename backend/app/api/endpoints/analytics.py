@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from app.db.database import get_db
 from app.models import models
 from app.schemas import schemas
@@ -75,8 +75,8 @@ async def get_analytics_summary(
     ).scalar() or 0
     
     # Get net cash flow for current month from MonthlyTrend
-    current_month = datetime.now(UTC).strftime("%b")
-    current_year = datetime.now(UTC).year
+    current_month = datetime.now(timezone.utc).strftime("%b")
+    current_year = datetime.now(timezone.utc).year
     
     monthly_trend = db.query(models.MonthlyTrend).filter(
         models.MonthlyTrend.month == current_month,
@@ -87,8 +87,13 @@ async def get_analytics_summary(
     
     # If no data in MonthlyTrend, calculate from transactions
     if net_cash_flow == 0:
-        current_month_start = datetime(current_year, datetime.now(UTC).month, 1)
-        current_month_end = datetime(current_year, datetime.now(UTC).month + 1, 1) if datetime.now(UTC).month < 12 else datetime(current_year + 1, 1, 1)
+        current_month_start = datetime(current_year, datetime.now(timezone.utc).month, 1, tzinfo=timezone.utc)
+        now = datetime.now(timezone.utc)
+        current_month_end = (
+                 datetime(current_year, now.month + 1, 1, tzinfo=timezone.utc)
+                if now.month < 12 else
+                 datetime(current_year + 1, 1, 1, tzinfo=timezone.utc)
+            )
         
         deposits = db.query(func.sum(models.Transaction.amount)).filter(
             models.Transaction.transaction_type == models.TransactionType.CREDIT,

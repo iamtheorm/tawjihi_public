@@ -88,13 +88,11 @@ useEffect(() => {
 
     if (segmentRes.ok) {
       const segmentsData = await segmentRes.json();
-      console.log("Fetched segments:", segmentsData);
       setSegments(segmentsData);
     }
 
     if (productRes.ok) {
       const productsData = await productRes.json();
-      console.log("Fetched products:", productsData);
       setProducts(productsData);
     }
   }

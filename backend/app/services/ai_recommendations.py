@@ -201,7 +201,7 @@ class AIRecommendationService:
                 'product_name': 'Credit Card',
                 'confidence_score': 0.8,
                 'priority': 3,
-                'recommendation_reason': 'Limited existing product portfolio'
+                'recommendation_reason': 'Limite        d existing product portfolio'
             })
         
         return recommendations[:top_n]

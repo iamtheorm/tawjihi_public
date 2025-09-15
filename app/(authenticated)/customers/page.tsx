@@ -83,7 +83,6 @@ export default function CustomersPage() {
       }
       
       const data = await customersRes.json()
-      console.log("Fetched customers:", data)
       setCustomers(data)
       
       if (countRes.ok) {
@@ -168,11 +167,6 @@ export default function CustomersPage() {
   const totalPages = Math.ceil(totalCustomers / ITEMS_PER_PAGE)
   const paginatedCustomers = customers
 
-  console.log("Total customers:", customers.length)
-  console.log("Filtered customers:", filteredCustomers.length)
-  console.log("Current page:", currentPage)
-  console.log("Total pages:", totalPages)
-  console.log("Paginated customers:", paginatedCustomers.length)
 
   const handlePageChange = (newPage: number) => {
     const validPage = Math.max(1, Math.min(newPage, totalPages))

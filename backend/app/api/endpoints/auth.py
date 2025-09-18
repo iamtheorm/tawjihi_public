@@ -35,8 +35,9 @@ async def register_user(
         )
 
     # Create user profile first
+    import pytz
     new_user = User(
-        account_number=f"ACC-{datetime.now(datetime.timezone.utc).strftime('%Y%m%d%H%M%S')}",
+        account_number=f"ACC-{datetime.now(pytz.UTC).strftime('%Y%m%d%H%M%S')}",
         industry="Not Set",
         occupation="Not Set",
         organisation="Not Set",
@@ -59,7 +60,7 @@ async def register_user(
         user_id=new_user.id,  # Now we have the user_id
         username=user_data.username,
         email=user_data.email,
-        hashed_password=get_password_hash(user_data.password),
+        password=get_password_hash(user_data.password),
         is_active=True
     )
     db.add(new_auth)
@@ -70,6 +71,7 @@ async def register_user(
         id=new_auth.id,
         username=new_auth.username,
         email=new_auth.email,
+        account_number=new_user.account_number,
         is_active=new_auth.is_active
     )
 
@@ -80,7 +82,7 @@ async def login(
 ):
     # Authenticate user
     user = db.query(Auth).filter(Auth.username == user_data.username).first()
-    if not user or not verify_password(user_data.password, user.hashed_password):
+    if not user or not verify_password(user_data.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -98,10 +100,33 @@ async def login(
 
 @router.get("/me", response_model=UserResponse)
 async def read_users_me(current_user: Auth = Depends(get_current_active_user)):
+    # Fetch the user profile to get account_number and other details
+    from app.db.database import get_db
+    from fastapi import Depends
+    db = next(get_db())
+    user_profile = db.query(User).filter(User.id == current_user.user_id).first()
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User profile not found")
     return UserResponse(
         id=current_user.id,
         username=current_user.username,
         email=current_user.email,
+        account_number=user_profile.account_number,
+        industry=user_profile.industry,
+        occupation=user_profile.occupation,
+        organisation=user_profile.organisation,
+        residence=user_profile.residence,
+        date_of_birth=user_profile.date_of_birth,
+        employment_status=user_profile.employment_status,
+        basic_salary=user_profile.basic_salary,
+        expected_monthly_income=user_profile.expected_monthly_income,
+        permanent_address_line1=user_profile.permanent_address_line1,
+        city=user_profile.city,
+        post_code=user_profile.post_code,
+        nationality=user_profile.nationality,
+        marital_status=user_profile.marital_status,
+        created_at=user_profile.created_at,
+        updated_at=user_profile.updated_at,
         is_active=current_user.is_active
     )
 
@@ -142,4 +167,4 @@ async def logout():
     Logout endpoint - returns success message
     The actual token invalidation is handled by the frontend by removing the token
     """
-    return {"message": "Successfully logged out"} 
+    return {"message": "Successfully logged out"}

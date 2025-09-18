@@ -106,9 +106,19 @@ async def create_customer(customer: CustomerCreate, db: Session = Depends(get_db
         
         if existing_customer:
             logger.warning(f"Customer with email {customer.email} already exists")
-            raise HTTPException(status_code=400, detail="Customer with this email already exists.")        # Convert email to lowercase before saving
+            raise HTTPException(status_code=400, detail="Customer with this email already exists.")
+        
+        # Convert email to lowercase before saving
         customer_data = customer.dict()
         customer_data['email'] = customer_data['email'].lower()
+        
+        # Set created_at and updated_at to current datetime if not provided
+        from datetime import datetime
+        if 'created_at' not in customer_data or customer_data.get('created_at') is None:
+            customer_data['created_at'] = datetime.utcnow()
+        if 'updated_at' not in customer_data or customer_data.get('updated_at') is None:
+            customer_data['updated_at'] = datetime.utcnow()
+        
         db_customer = Customer(**customer_data)
         db.add(db_customer)
         db.commit()

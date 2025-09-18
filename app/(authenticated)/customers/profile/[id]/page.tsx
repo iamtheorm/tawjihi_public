@@ -379,8 +379,14 @@ export default function CustomerProfilePage() {
                           <div className="flex items-center justify-between">
                             <div className="font-semibold">{rec.title}</div>
                             <Badge
-                              variant={rec.priority === "high" ? "default" : "secondary"}
-                              className={rec.priority === "high" ? "bg-banking-500 hover:bg-banking-600" : ""}
+                              variant="default"
+                              className={
+                                rec.priority === "high"
+                                  ? "bg-red-500 hover:bg-red-600 text-white"
+                                  : rec.priority === "medium"
+                                    ? "bg-yellow-500 hover:bg-yellow-600 text-black"
+                                    : "bg-green-500 hover:bg-green-600 text-white"
+                              }
                             >
                               {rec.priority} Priority
                             </Badge>

@@ -71,7 +71,7 @@ async def get_analytics_summary(
     
     # Get total assets (sum of all deposits)
     total_assets = db.query(func.sum(models.Transaction.amount)).filter(
-        models.Transaction.transaction_type == models.TransactionType.CREDIT
+        models.Transaction.transaction_type == models.TransactionType.CREDIT.value
     ).scalar() or 0
     
     # Get net cash flow for current month from MonthlyTrend
@@ -96,13 +96,13 @@ async def get_analytics_summary(
             )
         
         deposits = db.query(func.sum(models.Transaction.amount)).filter(
-            models.Transaction.transaction_type == models.TransactionType.CREDIT,
+            models.Transaction.transaction_type == models.TransactionType.CREDIT.value,
             models.Transaction.created_at >= current_month_start,
             models.Transaction.created_at < current_month_end
         ).scalar() or 0
         
         withdrawals = db.query(func.sum(models.Transaction.amount)).filter(
-            models.Transaction.transaction_type == models.TransactionType.DEBIT,
+            models.Transaction.transaction_type == models.TransactionType.DEBIT.value,
             models.Transaction.created_at >= current_month_start,
             models.Transaction.created_at < current_month_end
         ).scalar() or 0

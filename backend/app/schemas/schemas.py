@@ -26,8 +26,24 @@ class UserBase(BaseModel):
     nationality: Optional[str] = None
     marital_status: Optional[MaritalStatus] = None
 
-class UserCreate(UserBase):
-    pass
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    account_number: Optional[str] = None
+    industry: Optional[str] = None
+    occupation: Optional[str] = None
+    organisation: Optional[str] = None
+    residence: Optional[str] = None
+    date_of_birth: Optional[str] = None
+    employment_status: Optional[EmploymentStatus] = None
+    basic_salary: Optional[float] = None
+    expected_monthly_income: Optional[float] = None
+    permanent_address_line1: Optional[str] = None
+    city: Optional[str] = None
+    post_code: Optional[str] = None
+    nationality: Optional[str] = None
+    marital_status: Optional[MaritalStatus] = None
 
 class UserLogin(BaseModel):
     username: str

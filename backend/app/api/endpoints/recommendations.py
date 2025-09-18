@@ -156,33 +156,47 @@ def get_campaigns(
 # AI Recommendations Endpoints
 @router.post("/generate/{customer_id}")
 async def generate_ai_recommendations(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db)
 ):
     """Generate AI-powered recommendations for a customer"""
     try:
+        try:
+            customer_id_int = int(customer_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid customer ID: must be a valid integer")
+
+        if customer_id_int <= 0:
+            raise HTTPException(status_code=400, detail="Invalid customer ID: must be a positive integer")
+
         # Get customer from database
-        customer = db.query(models.Customer).filter(models.Customer.id == customer_id).first()
+        customer = db.query(models.Customer).filter(models.Customer.id == customer_id_int).first()
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
         
         # Generate AI recommendations
-        ai_recommendations = ai_service.get_recommendations(customer, top_n=3)
+        ai_recommendations = ai_service.get_recommendations(customer, top_n=4)
         
         # Store recommendations in database
         stored_recommendations = []
-        for rec in ai_recommendations:
-            # Check if product exists, create if not
+        seen_product_ids = set()
+        # Sort recommendations by confidence score descending to ensure highest confidence first
+        ai_recommendations_sorted = sorted(ai_recommendations, key=lambda r: r['confidence_score'], reverse=True)
+
+        # Process recommendations in sorted order and assign correct priorities
+        for idx, rec in enumerate(ai_recommendations_sorted, 1):
+            # Check if product exists, skip if not (do not create new products)
             product = db.query(models.Product).filter(models.Product.name == rec['product_name']).first()
             if not product:
-                product = models.Product(
-                    name=rec['product_name'],
-                    description=f"AI recommended {rec['product_name']} for customer profile"
-                )
-                db.add(product)
-                db.commit()
-                db.refresh(product)
-            
+                logger.warning(f"Product '{rec['product_name']}' not found in database, skipping recommendation")
+                continue
+
+            # Skip duplicate recommendations for the same product
+            if product.id in seen_product_ids:
+                logger.info(f"Duplicate recommendation for product '{product.name}' skipped")
+                continue
+            seen_product_ids.add(product.id)
+
             # Check if segment exists, create default if not
             segment = db.query(models.Segment).filter(models.Segment.name == "AI Generated").first()
             if not segment:
@@ -190,19 +204,33 @@ async def generate_ai_recommendations(
                 db.add(segment)
                 db.commit()
                 db.refresh(segment)
-            
-            # Create customer recommendation
-            customer_rec = models.CustomerRecommendation(
-                customer_id=customer_id,
-                product_id=product.id,
-                segment_id=segment.id,
-                recommendation_reason=rec['recommendation_reason'],
-                confidence_score=rec['confidence_score'],
-                priority=str(rec['priority']),
-                status="pending"
-            )
-            db.add(customer_rec)
-            stored_recommendations.append(customer_rec)
+
+            # Check if recommendation already exists for this customer and product
+            existing_rec = db.query(models.CustomerRecommendation).filter(
+                models.CustomerRecommendation.customer_id == customer_id_int,
+                models.CustomerRecommendation.product_id == product.id
+            ).first()
+
+            if existing_rec:
+                # Update existing recommendation with new data and correct priority
+                existing_rec.recommendation_reason = rec['recommendation_reason']
+                existing_rec.confidence_score = rec['confidence_score']
+                existing_rec.priority = str(idx)  # Use the sorted position as priority
+                existing_rec.status = "pending"
+                stored_recommendations.append(existing_rec)
+            else:
+                # Create new customer recommendation with correct priority
+                customer_rec = models.CustomerRecommendation(
+                    customer_id=customer_id_int,
+                    product_id=product.id,
+                    segment_id=segment.id,
+                    recommendation_reason=rec['recommendation_reason'],
+                    confidence_score=rec['confidence_score'],
+                    priority=str(idx),  # Use the sorted position as priority
+                    status="pending"
+                )
+                db.add(customer_rec)
+                stored_recommendations.append(customer_rec)
         
         db.commit()
         
@@ -210,11 +238,11 @@ async def generate_ai_recommendations(
         for rec in stored_recommendations:
             db.refresh(rec)
         
-        logger.info(f"Generated {len(stored_recommendations)} AI recommendations for customer {customer_id}")
-        
+        logger.info(f"Generated {len(stored_recommendations)} AI recommendations for customer {customer_id_int}")
+
         return {
             "message": f"Successfully generated {len(stored_recommendations)} AI recommendations",
-            "customer_id": customer_id,
+            "customer_id": customer_id_int,
             "recommendations": [
                 {
                     "id": rec.id,
@@ -227,30 +255,56 @@ async def generate_ai_recommendations(
             ]
         }
         
+    except HTTPException:
+        # Re-raise HTTPExceptions as they are
+        raise
     except Exception as e:
         logger.error(f"Error generating AI recommendations: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error generating recommendations: {str(e)}")
 
 @router.get("/customer/{customer_id}")
 async def get_customer_recommendations(
-    customer_id: int,
+    customer_id: str,
     db: Session = Depends(get_db)
 ):
     """Get all recommendations for a specific customer"""
     try:
-        customer = db.query(models.Customer).filter(models.Customer.id == customer_id).first()
+        try:
+            customer_id_int = int(customer_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid customer ID: must be a valid integer")
+
+        if customer_id_int <= 0:
+            raise HTTPException(status_code=400, detail="Invalid customer ID: must be a positive integer")
+
+        customer = db.query(models.Customer).filter(models.Customer.id == customer_id_int).first()
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
         
         recommendations = db.query(models.CustomerRecommendation)\
-            .filter(models.CustomerRecommendation.customer_id == customer_id)\
+            .filter(models.CustomerRecommendation.customer_id == customer_id_int)\
             .options(joinedload(models.CustomerRecommendation.product))\
             .options(joinedload(models.CustomerRecommendation.segment))\
-            .order_by(models.CustomerRecommendation.priority)\
+            .order_by(models.CustomerRecommendation.confidence_score.desc())\
             .all()
+
+        # Update priorities based on the sorted order (highest confidence = priority 1)
+        for idx, rec in enumerate(recommendations, 1):
+            # Convert numeric priority to string priority for frontend consistency
+            if idx == 1:
+                priority_str = "high"
+            elif idx == 2:
+                priority_str = "medium"
+            else:
+                priority_str = "low"
+
+            rec.priority = priority_str
+            # Also update the database record to maintain consistency
+            db.query(models.CustomerRecommendation).filter(models.CustomerRecommendation.id == rec.id).update({"priority": priority_str})
+        db.commit()
         
         return {
-            "customer_id": customer_id,
+            "customer_id": customer_id_int,
             "customer_name": customer.name,
             "recommendations": [
                 {
@@ -297,37 +351,51 @@ async def generate_recommendations_for_all_customers(db: Session = Depends(get_d
                     continue
                 
                 # Generate recommendations
-                ai_recommendations = ai_service.get_recommendations(customer, top_n=3)
+                ai_recommendations = ai_service.get_recommendations(customer, top_n=4)
                 
                 # Store in database
-                for rec in ai_recommendations:
+                seen_product_ids = set()
+                # Sort recommendations by confidence score descending to ensure highest confidence first
+                ai_recommendations_sorted = sorted(ai_recommendations, key=lambda r: r['confidence_score'], reverse=True)
+
+                # Process recommendations in sorted order and assign correct priorities
+                for idx, rec in enumerate(ai_recommendations_sorted, 1):
                     product = db.query(models.Product).filter(models.Product.name == rec['product_name']).first()
                     if not product:
-                        product = models.Product(
-                            name=rec['product_name'],
-                            description=f"AI recommended {rec['product_name']}"
-                        )
-                        db.add(product)
-                        db.commit()
-                        db.refresh(product)
-                    
+                        logger.warning(f"Product '{rec['product_name']}' not found in database, skipping recommendation")
+                        continue
+
+                    # Skip duplicate recommendations for the same product
+                    if product.id in seen_product_ids:
+                        logger.info(f"Duplicate recommendation for product '{product.name}' skipped")
+                        continue
+                    seen_product_ids.add(product.id)
+
                     segment = db.query(models.Segment).filter(models.Segment.name == "AI Generated").first()
                     if not segment:
                         segment = models.Segment(name="AI Generated")
                         db.add(segment)
                         db.commit()
                         db.refresh(segment)
-                    
-                    customer_rec = models.CustomerRecommendation(
-                        customer_id=customer.id,
-                        product_id=product.id,
-                        segment_id=segment.id,
-                        recommendation_reason=rec['recommendation_reason'],
-                        confidence_score=rec['confidence_score'],
-                        priority=str(rec['priority']),
-                        status="pending"
-                    )
-                    db.add(customer_rec)
+
+                    # Check if recommendation already exists for this customer and product
+                    existing_rec = db.query(models.CustomerRecommendation).filter(
+                        models.CustomerRecommendation.customer_id == customer.id,
+                        models.CustomerRecommendation.product_id == product.id
+                    ).first()
+
+                    if not existing_rec:
+                        # Create new customer recommendation only if it doesn't exist with correct priority
+                        customer_rec = models.CustomerRecommendation(
+                            customer_id=customer.id,
+                            product_id=product.id,
+                            segment_id=segment.id,
+                            recommendation_reason=rec['recommendation_reason'],
+                            confidence_score=rec['confidence_score'],
+                            priority=str(idx),  # Use the sorted position as priority
+                            status="pending"
+                        )
+                        db.add(customer_rec)
                 
                 db.commit()
                 

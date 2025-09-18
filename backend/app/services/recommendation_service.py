@@ -30,7 +30,8 @@ class RecommendationService:
     def load_model(self):
         """Load the trained ML model"""
         try:
-            model_path = os.path.join(os.path.dirname(__file__), "model", "model.pkl")
+            # Assumes the model directory is a sibling of the services directory
+            model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "xgmodels2", "xgb_model.pkl")
             self.model = joblib.load(model_path)
             logger.info("Model loaded successfully")
         except Exception as e:

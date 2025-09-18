@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 from app.db.database import get_db
 from app.models.models import Customer, Transaction, User, CustomerRecommendation, Product, Segment
 from app.schemas.schemas import CustomerProfile, UserResponse, Transaction as TransactionSchema
+from sqlalchemy import case
 
 router = APIRouter(
     prefix="/customer-profile",
@@ -28,10 +29,10 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
     
     # Convert transactions to schema
     transaction_schemas = [TransactionSchema.from_orm(t) for t in transactions]
-      # Fetch recommendations from CustomerRecommendation table (including AI-generated ones)
+    # Fetch top 4 recommendations from CustomerRecommendation table (including AI-generated ones)
     recommendations = db.query(CustomerRecommendation).filter(
         CustomerRecommendation.customer_id == customer_id
-    ).order_by(CustomerRecommendation.priority, CustomerRecommendation.confidence_score.desc()).all()
+    ).order_by(CustomerRecommendation.confidence_score.desc()).limit(4).all()
     
     # Convert recommendations to the expected format
     recommendation_list = []
@@ -46,6 +47,15 @@ async def get_customer_profile(customer_id: int, db: Session = Depends(get_db)):
                 priority = "medium"
             else:
                 priority = "low"
+
+            # Ensure priority is always a string for frontend consistency
+            if isinstance(rec.priority, int):
+                if rec.priority == 1:
+                    priority = "high"
+                elif rec.priority == 2:
+                    priority = "medium"
+                else:
+                    priority = "low"
                 
             recommendation_list.append({
                 "title": product.name,

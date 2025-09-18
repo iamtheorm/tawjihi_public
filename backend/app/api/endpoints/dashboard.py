@@ -6,9 +6,7 @@ from datetime import datetime, timedelta
 from app.db.database import get_db
 from app.models.models import (
     Customer, User, Transaction, Product, Segment,
-    Recommendation, CustomerRecommendation, CustomerSegment,
-    ProductPerformance, RegionalPerformance, MonthlyTrend,
-    CustomerGrowth, TransactionType
+    CustomerRecommendation, TransactionType
 )
 
 router = APIRouter()
@@ -51,69 +49,85 @@ async def get_dashboard_overview(db: Session = Depends(get_db)):
 async def get_customer_activity(db: Session = Depends(get_db)):
     """Get customer activity data for the chart"""
     try:
-        # Get last 7 months of data
-        months = []
+        # Get last 7 months of data with proper month and year
+        current = datetime.utcnow()
+        months_data = []
         for i in range(7):
-            month = datetime.utcnow() - timedelta(days=30*i)
-            months.append(month.strftime("%b"))
-        
+            date = current - timedelta(days=30*i)
+            month_name = date.strftime("%b")
+            month_num = date.month
+            year = date.year
+            months_data.append((month_name, month_num, year))
+
         # Get active and dormant customers for each month
         activity_data = []
-        for month in reversed(months):
-            month_date = datetime.strptime(month, "%b")
+        for month_name, month_num, year in reversed(months_data):
             active = db.query(Customer).filter(
                 Customer.status == "active",
-                func.extract('month', Customer.updated_at) == month_date.month
+                func.extract('month', Customer.updated_at) == month_num,
+                func.extract('year', Customer.updated_at) == year
             ).count()
-            
+
             dormant = db.query(Customer).filter(
                 Customer.status == "dormant",
-                func.extract('month', Customer.updated_at) == month_date.month
+                func.extract('month', Customer.updated_at) == month_num,
+                func.extract('year', Customer.updated_at) == year
             ).count()
-            
+
             activity_data.append({
-                "month": month,
+                "month": month_name,
                 "active": active,
                 "dormant": dormant
             })
-        
+
         return activity_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Log the detailed error for debugging
+        import logging
+        logging.error(f"Error in get_customer_activity: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @router.get("/conversion-rates")
 async def get_conversion_rates(db: Session = Depends(get_db)):
     """Get conversion rates data for the chart"""
     try:
-        # Get last 7 months of data
-        months = []
+        # Get last 7 months of data with proper month and year
+        current = datetime.utcnow()
+        months_data = []
         for i in range(7):
-            month = datetime.utcnow() - timedelta(days=30*i)
-            months.append(month.strftime("%b"))
-        
+            date = current - timedelta(days=30*i)
+            month_name = date.strftime("%b")
+            month_num = date.month
+            year = date.year
+            months_data.append((month_name, month_num, year))
+
         # Calculate conversion rates for each month
         conversion_data = []
-        for month in reversed(months):
-            month_date = datetime.strptime(month, "%b")
+        for month_name, month_num, year in reversed(months_data):
             total = db.query(CustomerRecommendation).filter(
-                func.extract('month', CustomerRecommendation.created_at) == month_date.month
+                func.extract('month', CustomerRecommendation.recommended_at) == month_num,
+                func.extract('year', CustomerRecommendation.recommended_at) == year
             ).count()
-            
+
             accepted = db.query(CustomerRecommendation).filter(
-                func.extract('month', CustomerRecommendation.created_at) == month_date.month,
+                func.extract('month', CustomerRecommendation.recommended_at) == month_num,
+                func.extract('year', CustomerRecommendation.recommended_at) == year,
                 CustomerRecommendation.status == "accepted"
             ).count()
-            
+
             rate = (accepted / total * 100) if total > 0 else 0
-            
+
             conversion_data.append({
-                "month": month,
+                "month": month_name,
                 "rate": round(rate, 2)
             })
-        
+
         return conversion_data
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Log the detailed error for debugging
+        import logging
+        logging.error(f"Error in get_conversion_rates: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @router.get("/top-recommendations")
 async def get_top_recommendations(db: Session = Depends(get_db)):
@@ -152,15 +166,15 @@ async def get_alerts(db: Session = Depends(get_db)):
     """Get system alerts and opportunities"""
     try:
         # Get unusual spending patterns
-        unusual_spending = db.query(User).join(Transaction).filter(
+        unusual_spending = db.query(User).join(Transaction, User.account_number == Transaction.account_number).filter(
             Transaction.amount > 1000,  # Threshold for unusual spending
-            Transaction.created_at >= datetime.utcnow() - timedelta(days=7)
+            Transaction.created_at >= func.current_date() - timedelta(days=7)
         ).count()
         
         # Get dormant accounts
         dormant_accounts = db.query(Customer).filter(
             Customer.status == "dormant",
-            Customer.updated_at >= datetime.utcnow() - timedelta(days=30)
+            Customer.updated_at >= func.current_date() - timedelta(days=30)
         ).count()
         
         # Get potential insurance customers
@@ -194,4 +208,4 @@ async def get_alerts(db: Session = Depends(get_db)):
             }
         ]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
+        raise HTTPException(status_code=500, detail=str(e))

@@ -288,7 +288,8 @@ export default function AddCustomerModal({ open, onClose, onAdd }: AddCustomerMo
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.detail || "Failed to add customer")
+        const errorMessage = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail) || "Failed to add customer"
+        throw new Error(errorMessage)
       }
 
       toast.success("Customer added successfully")

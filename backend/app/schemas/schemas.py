@@ -98,48 +98,48 @@ class CustomerBase(BaseModel):
     status: Optional[str] = None
     recommendation: Optional[str] = None
     potential: Optional[str] = None
-    
-    # Additional CSV fields
+
+    # Additional CSV fields - using strings to accept frontend values
     age: Optional[int] = None
     income_omr: Optional[float] = None
-    employment_type: Optional[EmploymentType] = None
+    employment_type: Optional[str] = None
     credit_score: Optional[int] = None
     account_tenure_months: Optional[int] = None
-    marital_status_csv: Optional[MaritalStatusCSV] = None
+    marital_status_csv: Optional[str] = None
     number_of_children: Optional[int] = None
     digital_engagement_score: Optional[int] = None
-    residence_status: Optional[ResidenceStatus] = None
-    nationality: Optional[Nationality] = None
-    religion: Optional[Religion] = None
-    account_type: Optional[AccountType] = None
-    vehicle_owner: Optional[YesNo] = None
-    drivers_license: Optional[YesNo] = None
+    residence_status: Optional[str] = None
+    nationality: Optional[str] = None
+    religion: Optional[str] = None
+    account_type: Optional[str] = None
+    vehicle_owner: Optional[str] = None
+    drivers_license: Optional[str] = None
     monthly_groceries_spend: Optional[float] = None
     international_travel_frequency: Optional[int] = None
-    risk_tolerance: Optional[RiskTolerance] = None
-    student_status: Optional[YesNo] = None
-    employer_insurance: Optional[YesNo] = None
+    risk_tolerance: Optional[str] = None
+    student_status: Optional[str] = None
+    employer_insurance: Optional[str] = None
     debt_to_income: Optional[float] = None
-    business_account_owner: Optional[YesNo] = None
+    business_account_owner: Optional[str] = None
     already_has_products: Optional[int] = None
     do_not_need_products: Optional[int] = None
     recent_transactions: Optional[int] = None
-    education_level: Optional[EducationLevel] = None
-    gender: Optional[Gender] = None
-    occupation_sector: Optional[OccupationSector] = None
+    education_level: Optional[str] = None
+    gender: Optional[str] = None
+    occupation_sector: Optional[str] = None
     health_score: Optional[int] = None
     property_value_omr: Optional[float] = None
     vehicle_value_omr: Optional[float] = None
     credit_utilization_pct: Optional[float] = None
     avg_days_abroad_per_year: Optional[int] = None
-    digital_channel_preference: Optional[DigitalChannelPreference] = None
+    digital_channel_preference: Optional[str] = None
 
 class CustomerCreate(CustomerBase):
     pass
 
 class Customer(CustomerBase):
     id: int
-    created_at: datetime
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     class Config:

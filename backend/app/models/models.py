@@ -23,6 +23,10 @@ class EmploymentType(str, Enum):
     PART_TIME = "PART_TIME"
     CONTRACT = "CONTRACT"
     FREELANCE = "FREELANCE"
+    SALARIED = "SALARIED"
+    SELF_EMPLOYED = "SELF_EMPLOYED"
+    STUDENT = "STUDENT"
+    RETIRED = "RETIRED"
 
 class MaritalStatusCSV(str, Enum):
     SINGLE = "SINGLE"
@@ -34,10 +38,13 @@ class ResidenceStatus(str, Enum):
     OWNED = "OWNED"
     RENTED = "RENTED"
     MORTGAGED = "MORTGAGED"
+    FAMILY = "FAMILY"
 
 class Nationality(str, Enum):
     OMANI = "OMANI"
     NON_OMANI = "NON_OMANI"
+    EG = "EG"
+    IN = "IN"
 
 class Religion(str, Enum):
     MUSLIM = "MUSLIM"
@@ -49,6 +56,8 @@ class AccountType(str, Enum):
     SAVINGS = "SAVINGS"
     CURRENT = "CURRENT"
     BUSINESS = "BUSINESS"
+    SALARY = "SALARY"
+    JOINT = "JOINT"
 
 class YesNo(str, Enum):
     YES = "YES"
@@ -61,9 +70,14 @@ class RiskTolerance(str, Enum):
 
 class EducationLevel(str, Enum):
     HIGH_SCHOOL = "HIGH_SCHOOL"
+    BACHELOR = "BACHELOR"
     BACHELORS = "BACHELORS"
+    ASSOCIATE = "ASSOCIATE"
+    MASTER = "MASTER"
     MASTERS = "MASTERS"
     PHD = "PHD"
+    DOCTORATE = "DOCTORATE"
+    DIPLOMA = "DIPLOMA"
 
 class Gender(str, Enum):
     MALE = "MALE"
@@ -75,10 +89,27 @@ class OccupationSector(str, Enum):
     FINANCE = "FINANCE"
     HEALTHCARE = "HEALTHCARE"
     EDUCATION = "EDUCATION"
+    PRIVATE = "PRIVATE"
+    PUBLIC = "PUBLIC"
+    GOVERNMENT = "GOVERNMENT"
+    STUDENT = "STUDENT"
+    SELF_EMPLOYED = "SELF_EMPLOYED"
+    RETIRED = "RETIRED"
+    UNEMPLOYED = "UNEMPLOYED"
+    TECHNOLOGY = "TECHNOLOGY"
+    MANUFACTURING = "MANUFACTURING"
+    RETAIL = "RETAIL"
+    CONSTRUCTION = "CONSTRUCTION"
+    TRANSPORTATION = "TRANSPORTATION"
+    HOSPITALITY = "HOSPITALITY"
+    AGRICULTURE = "AGRICULTURE"
+    MEDIA = "MEDIA"
+    LEGAL = "LEGAL"
+    CONSULTING = "CONSULTING"
     OTHER = "OTHER"
 
 class DigitalChannelPreference(str, Enum):
-    MOBILE_APP = "MOBILE_APP"
+    MOBILE = "MOBILE"
     WEB = "WEB"
     BRANCH = "BRANCH"
 

@@ -1,31 +1,15 @@
-# Comprehensive System Testing
+# Fix 422 Errors for POST /customers/ Endpoint
 
-## Backend API Testing
-- [x] Test dashboard endpoints (overview, customer-activity, conversion-rates, top-recommendations, alerts)
-- [x] Test analytics endpoints (summary, monthly-trends, customer-segments)
-- [x] Test segments and products endpoints
-- [x] Test recommendations endpoints
-- [ ] Test authentication endpoints
-- [x] Test customer profile endpoints (get customer profile with recommendations)
-- [x] Test recommendations endpoints (get customer recommendations, generate AI recommendations)
-- [x] Test error handling and edge cases (invalid customer IDs, nonexistent customers)
-- [ ] Test customer management endpoints
-- [ ] Test database operations
+## Steps to Complete
 
-## Frontend Testing
-- [ ] Test main page components
-- [ ] Test customer management UI
-- [ ] Test recommendation display
-- [ ] Test form submissions
-- [ ] Test navigation and routing
-- [ ] Test responsive design
+1. **Update create_customer function** - Add enum mapping logic to convert string values to enum values before creating the customer
+2. **Test the endpoint** - Verify that the endpoint now accepts string values and maps them correctly
+3. **Verify frontend integration** - Ensure customer creation works from the AddCustomerModal
 
-## Integration Testing
-- [ ] Test end-to-end flows
-- [ ] Test data consistency between frontend and backend
-- [ ] Test error handling across the stack
-
-## Performance Testing
-- [ ] Test API response times
-- [ ] Test frontend loading times
-- [ ] Test database query performance
+## Current Status
+- [x] Analyzed the issue: Enum field mismatches between frontend strings and backend enums
+- [x] Update backend/app/api/endpoints/customers.py with mapping logic
+- [x] Update backend/app/schemas/schemas.py to accept strings instead of enums
+- [x] Test the changes
+- [x] Fixed database enum issue: Added 'IN' to Nationality enum
+- [ ] Verify frontend works

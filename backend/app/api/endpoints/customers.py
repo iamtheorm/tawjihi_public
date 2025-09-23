@@ -111,7 +111,221 @@ async def create_customer(customer: CustomerCreate, db: Session = Depends(get_db
         # Convert email to lowercase before saving
         customer_data = customer.dict()
         customer_data['email'] = customer_data['email'].lower()
-        
+
+        # Map string values to enum values
+        # Employment type mapping
+        employment_type_mapping = {
+            'Salaried': 'SALARIED',
+            'Self-Employed': 'SELF_EMPLOYED',
+            'Student': 'STUDENT',
+            'Retired': 'RETIRED',
+            'Full-Time': 'FULL_TIME',
+            'Part-Time': 'PART_TIME',
+            'Contract': 'CONTRACT',
+            'Freelance': 'FREELANCE'
+        }
+        if customer_data.get('employment_type'):
+            employment_type = str(customer_data['employment_type']).strip()
+            if employment_type in employment_type_mapping:
+                customer_data['employment_type'] = employment_type_mapping[employment_type]
+            else:
+                # Try to convert to uppercase with underscores
+                customer_data['employment_type'] = employment_type.upper().replace('-', '_').replace(' ', '_')
+
+        # Nationality mapping
+        nationality_mapping = {
+            'OM': 'OMANI',
+            'Omani': 'OMANI',
+            'Non-OM': 'NON_OMANI',
+            'Non-Omani': 'NON_OMANI',
+            'EG': 'EG'
+        }
+        if customer_data.get('nationality'):
+            nationality = str(customer_data['nationality']).strip()
+            if nationality in nationality_mapping:
+                customer_data['nationality'] = nationality_mapping[nationality]
+            else:
+                customer_data['nationality'] = nationality.upper().replace('-', '_')
+
+        # Marital status mapping
+        marital_status_mapping = {
+            'Single': 'SINGLE',
+            'Married': 'MARRIED',
+            'Divorced': 'DIVORCED',
+            'Widowed': 'WIDOWED'
+        }
+        if customer_data.get('marital_status_csv'):
+            marital_status = str(customer_data['marital_status_csv']).strip()
+            if marital_status in marital_status_mapping:
+                customer_data['marital_status_csv'] = marital_status_mapping[marital_status]
+            else:
+                customer_data['marital_status_csv'] = marital_status.upper()
+
+        # Residence status mapping
+        residence_status_mapping = {
+            'Owned': 'OWNED',
+            'Rented': 'RENTED',
+            'Mortgaged': 'MORTGAGED',
+            'Family': 'FAMILY'
+        }
+        if customer_data.get('residence_status'):
+            residence_status = str(customer_data['residence_status']).strip()
+            if residence_status in residence_status_mapping:
+                customer_data['residence_status'] = residence_status_mapping[residence_status]
+            else:
+                customer_data['residence_status'] = residence_status.upper()
+
+        # Religion mapping
+        religion_mapping = {
+            'Muslim': 'MUSLIM',
+            'Christian': 'CHRISTIAN',
+            'Hindu': 'HINDU',
+            'Buddhist': 'BUDDHIST',
+            'Sikh': 'SIKH',
+            'Jewish': 'JEWISH',
+            'Other': 'OTHER'
+        }
+        if customer_data.get('religion'):
+            religion = str(customer_data['religion']).strip()
+            if religion in religion_mapping:
+                customer_data['religion'] = religion_mapping[religion]
+            else:
+                customer_data['religion'] = religion.upper()
+
+        # Account type mapping
+        account_type_mapping = {
+            'Savings': 'SAVINGS',
+            'Current': 'CURRENT',
+            'Checking': 'CHECKING',
+            'Investment': 'INVESTMENT',
+            'Business': 'BUSINESS',
+            'Joint': 'JOINT',
+            'Salary': 'SALARY'
+        }
+        if customer_data.get('account_type'):
+            account_type = str(customer_data['account_type']).strip()
+            if account_type in account_type_mapping:
+                customer_data['account_type'] = account_type_mapping[account_type]
+            else:
+                customer_data['account_type'] = account_type.upper()
+
+        # Yes/No mapping
+        yes_no_mapping = {
+            'Yes': 'YES',
+            'No': 'NO',
+            'Y': 'YES',
+            'N': 'NO',
+            'True': 'YES',
+            'False': 'NO',
+            '1': 'YES',
+            '0': 'NO'
+        }
+        for field in ['vehicle_owner', 'drivers_license', 'student_status', 'employer_insurance', 'business_account_owner']:
+            if customer_data.get(field):
+                value = str(customer_data[field]).strip()
+                if value in yes_no_mapping:
+                    customer_data[field] = yes_no_mapping[value]
+                else:
+                    customer_data[field] = value.upper()
+
+        # Risk tolerance mapping
+        risk_tolerance_mapping = {
+            'Low': 'LOW',
+            'Medium': 'MEDIUM',
+            'High': 'HIGH'
+        }
+        if customer_data.get('risk_tolerance'):
+            risk_tolerance = str(customer_data['risk_tolerance']).strip()
+            if risk_tolerance in risk_tolerance_mapping:
+                customer_data['risk_tolerance'] = risk_tolerance_mapping[risk_tolerance]
+            else:
+                customer_data['risk_tolerance'] = risk_tolerance.upper()
+
+        # Education level mapping
+        education_level_mapping = {
+            'High School': 'HIGH_SCHOOL',
+            'Bachelor': 'BACHELOR',
+            'Bachelors': 'BACHELORS',
+            'Master': 'MASTER',
+            'Masters': 'MASTERS',
+            'PhD': 'PHD',
+            'Diploma': 'DIPLOMA',
+            'Associate': 'ASSOCIATE',
+            'Doctorate': 'DOCTORATE'
+        }
+        if customer_data.get('education_level'):
+            education_level = str(customer_data['education_level']).strip()
+            if education_level in education_level_mapping:
+                customer_data['education_level'] = education_level_mapping[education_level]
+            else:
+                customer_data['education_level'] = education_level.upper().replace(' ', '_')
+
+        # Gender mapping
+        gender_mapping = {
+            'Male': 'MALE',
+            'Female': 'FEMALE',
+            'M': 'MALE',
+            'F': 'FEMALE',
+            'Other': 'OTHER'
+        }
+        if customer_data.get('gender'):
+            gender = str(customer_data['gender']).strip()
+            if gender in gender_mapping:
+                customer_data['gender'] = gender_mapping[gender]
+            else:
+                customer_data['gender'] = gender.upper()
+
+        # Occupation sector mapping
+        occupation_sector_mapping = {
+            'Private': 'PRIVATE',
+            'Public': 'PUBLIC',
+            'Government': 'GOVERNMENT',
+            'Student': 'STUDENT',
+            'Self-Employed': 'SELF_EMPLOYED',
+            'Retired': 'RETIRED',
+            'Unemployed': 'UNEMPLOYED',
+            'Education': 'EDUCATION',
+            'Healthcare': 'HEALTHCARE',
+            'Technology': 'TECHNOLOGY',
+            'Finance': 'FINANCE',
+            'Manufacturing': 'MANUFACTURING',
+            'Retail': 'RETAIL',
+            'Construction': 'CONSTRUCTION',
+            'Transportation': 'TRANSPORTATION',
+            'Hospitality': 'HOSPITALITY',
+            'Agriculture': 'AGRICULTURE',
+            'Media': 'MEDIA',
+            'Legal': 'LEGAL',
+            'Consulting': 'CONSULTING',
+            'IT': 'IT',
+            'Other': 'OTHER'
+        }
+        if customer_data.get('occupation_sector'):
+            occupation_sector = str(customer_data['occupation_sector']).strip()
+            if occupation_sector in occupation_sector_mapping:
+                customer_data['occupation_sector'] = occupation_sector_mapping[occupation_sector]
+            else:
+                customer_data['occupation_sector'] = occupation_sector.upper().replace(' ', '_')
+
+        # Digital channel preference mapping
+        digital_channel_preference_mapping = {
+            'Mobile': 'MOBILE',
+            'Web': 'WEB',
+            'Branch': 'BRANCH',
+            'Phone': 'PHONE',
+            'ATM': 'ATM',
+            'Online': 'ONLINE',
+            'In-Person': 'IN_PERSON',
+            'Digital': 'DIGITAL',
+            'Traditional': 'TRADITIONAL'
+        }
+        if customer_data.get('digital_channel_preference'):
+            digital_channel = str(customer_data['digital_channel_preference']).strip()
+            if digital_channel in digital_channel_preference_mapping:
+                customer_data['digital_channel_preference'] = digital_channel_preference_mapping[digital_channel]
+            else:
+                customer_data['digital_channel_preference'] = digital_channel.upper().replace('-', '_')
+
         # Set created_at and updated_at to current datetime if not provided
         from datetime import datetime
         if 'created_at' not in customer_data or customer_data.get('created_at') is None:
@@ -320,6 +534,142 @@ async def upload_customers_csv(
             'Avg_Days_Abroad_Per_Year': 'avg_days_abroad_per_year',
             'Digital_Channel_Preference': 'digital_channel_preference'
         }
+
+        # Employment type mapping from CSV values to enum values
+        employment_type_mapping = {
+            'Salaried': 'SALARIED',
+            'Self-Employed': 'SELF_EMPLOYED',
+            'Student': 'STUDENT',
+            'Retired': 'RETIRED',
+            'Full-Time': 'FULL_TIME',
+            'Part-Time': 'PART_TIME',
+            'Contract': 'CONTRACT',
+            'Freelance': 'FREELANCE'
+        }
+
+        # Nationality mapping from CSV values to enum values
+        nationality_mapping = {
+            'OM': 'OMANI',
+            'Omani': 'OMANI',
+            'Non-OM': 'NON_OMANI',
+            'Non-Omani': 'NON_OMANI',
+            'EG': 'EG'
+        }
+
+        # Marital status mapping from CSV values to enum values
+        marital_status_mapping = {
+            'Single': 'SINGLE',
+            'Married': 'MARRIED',
+            'Divorced': 'DIVORCED',
+            'Widowed': 'WIDOWED'
+        }
+
+        # Residence status mapping from CSV values to enum values
+        residence_status_mapping = {
+            'Owned': 'OWNED',
+            'Rented': 'RENTED',
+            'Mortgaged': 'MORTGAGED',
+            'Family': 'FAMILY'
+        }
+
+        # Religion mapping from CSV values to enum values
+        religion_mapping = {
+            'Muslim': 'MUSLIM',
+            'Christian': 'CHRISTIAN',
+            'Hindu': 'HINDU',
+            'Buddhist': 'BUDDHIST',
+            'Sikh': 'SIKH',
+            'Jewish': 'JEWISH',
+            'Other': 'OTHER'
+        }
+
+        # Account type mapping from CSV values to enum values
+        account_type_mapping = {
+            'Savings': 'SAVINGS',
+            'Current': 'CURRENT',
+            'Checking': 'CHECKING',
+            'Investment': 'INVESTMENT',
+            'Business': 'BUSINESS',
+            'Joint': 'JOINT'
+        }
+
+        # Yes/No mapping from CSV values to enum values
+        yes_no_mapping = {
+            'Yes': 'YES',
+            'No': 'NO',
+            'Y': 'YES',
+            'N': 'NO',
+            'True': 'YES',
+            'False': 'NO',
+            '1': 'YES',
+            '0': 'NO'
+        }
+
+        # Risk tolerance mapping from CSV values to enum values
+        risk_tolerance_mapping = {
+            'Low': 'LOW',
+            'Medium': 'MEDIUM',
+            'High': 'HIGH'
+        }
+
+        # Education level mapping from CSV values to enum values
+        education_level_mapping = {
+            'High School': 'HIGH_SCHOOL',
+            'Bachelor': 'BACHELOR',
+            'Master': 'MASTER',
+            'PhD': 'PHD',
+            'Diploma': 'DIPLOMA',
+            'Associate': 'ASSOCIATE',
+            'Doctorate': 'DOCTORATE'
+        }
+
+        # Gender mapping from CSV values to enum values
+        gender_mapping = {
+            'Male': 'MALE',
+            'Female': 'FEMALE',
+            'M': 'MALE',
+            'F': 'FEMALE',
+            'Other': 'OTHER'
+        }
+
+        # Occupation sector mapping from CSV values to enum values
+        occupation_sector_mapping = {
+            'Private': 'PRIVATE',
+            'Public': 'PUBLIC',
+            'Government': 'GOVERNMENT',
+            'Student': 'STUDENT',
+            'Self-Employed': 'SELF_EMPLOYED',
+            'Retired': 'RETIRED',
+            'Unemployed': 'UNEMPLOYED',
+            'Education': 'EDUCATION',
+            'Healthcare': 'HEALTHCARE',
+            'Technology': 'TECHNOLOGY',
+            'Finance': 'FINANCE',
+            'Manufacturing': 'MANUFACTURING',
+            'Retail': 'RETAIL',
+            'Construction': 'CONSTRUCTION',
+            'Transportation': 'TRANSPORTATION',
+            'Hospitality': 'HOSPITALITY',
+            'Agriculture': 'AGRICULTURE',
+            'Media': 'MEDIA',
+            'Legal': 'LEGAL',
+            'Consulting': 'CONSULTING'
+        }
+
+        # Digital channel preference mapping from CSV values to enum values
+        digital_channel_preference_mapping = {
+            'Mobile': 'MOBILE',
+            'Web': 'WEB',
+            'Branch': 'BRANCH',
+            'Phone': 'PHONE',
+            'ATM': 'ATM',
+            'Online': 'ONLINE',
+            'In-Person': 'IN_PERSON',
+            'Digital': 'DIGITAL',
+            'Traditional': 'TRADITIONAL'
+        }
+
+
         
         for index, row in df.iterrows():
             try:
@@ -339,12 +689,136 @@ async def upload_customers_csv(
                 for csv_col, db_field in column_mapping.items():
                     if csv_col in df.columns and pd.notna(row[csv_col]):
                         value = row[csv_col]
+                        logger.info(f"Processing field '{db_field}' with value: {value} (type: {type(value)})")
                         
                         # Handle special cases
                         if db_field == 'email':
                             customer_data[db_field] = str(value).lower().strip()
                         elif db_field == 'name':
                             customer_data[db_field] = str(value).strip()
+                        elif db_field == 'employment_type':
+                            # Map CSV employment type to enum value
+                            csv_employment_type = str(value).strip()
+                            if csv_employment_type in employment_type_mapping:
+                                customer_data[db_field] = employment_type_mapping[csv_employment_type]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_employment_type.upper().replace('-', '_')
+                        elif db_field == 'marital_status_csv':
+                            # Map CSV marital status to enum value
+                            csv_marital_status = str(value).strip()
+                            if csv_marital_status in marital_status_mapping:
+                                customer_data[db_field] = marital_status_mapping[csv_marital_status]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_marital_status.upper()
+                        elif db_field == 'residence_status':
+                            # Map CSV residence status to enum value
+                            csv_residence_status = str(value).strip()
+                            if csv_residence_status in residence_status_mapping:
+                                customer_data[db_field] = residence_status_mapping[csv_residence_status]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_residence_status.upper()
+                        elif db_field == 'religion':
+                            # Map CSV religion to enum value
+                            csv_religion = str(value).strip()
+                            if csv_religion in religion_mapping:
+                                customer_data[db_field] = religion_mapping[csv_religion]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_religion.upper()
+                        elif db_field == 'account_type':
+                            # Map CSV account type to enum value
+                            csv_account_type = str(value).strip()
+                            if csv_account_type in account_type_mapping:
+                                customer_data[db_field] = account_type_mapping[csv_account_type]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_account_type.upper()
+                        elif db_field in ['vehicle_owner', 'drivers_license', 'student_status', 'employer_insurance', 'business_account_owner']:
+                            # Map CSV yes/no values to enum values
+                            csv_yes_no = str(value).strip()
+                            if csv_yes_no in yes_no_mapping:
+                                customer_data[db_field] = yes_no_mapping[csv_yes_no]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_yes_no.upper()
+                        elif db_field == 'risk_tolerance':
+                            # Map CSV risk tolerance to enum value
+                            csv_risk_tolerance = str(value).strip()
+                            if csv_risk_tolerance in risk_tolerance_mapping:
+                                customer_data[db_field] = risk_tolerance_mapping[csv_risk_tolerance]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_risk_tolerance.upper()
+                        elif db_field == 'education_level':
+                            # Map CSV education level to enum value
+                            csv_education_level = str(value).strip()
+                            if csv_education_level in education_level_mapping:
+                                customer_data[db_field] = education_level_mapping[csv_education_level]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_education_level.upper().replace(' ', '_')
+                        elif db_field == 'gender':
+                            # Map CSV gender to enum value
+                            csv_gender = str(value).strip()
+                            if csv_gender in gender_mapping:
+                                customer_data[db_field] = gender_mapping[csv_gender]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_gender.upper()
+                        elif db_field == 'occupation_sector':
+                            # Map CSV occupation sector to enum value
+                            csv_occupation_sector = str(value).strip()
+                            if csv_occupation_sector in occupation_sector_mapping:
+                                customer_data[db_field] = occupation_sector_mapping[csv_occupation_sector]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_occupation_sector.upper().replace(' ', '_')
+                        elif db_field == 'digital_channel_preference':
+                            # Map CSV digital channel preference to enum value
+                            csv_digital_channel_preference = str(value).strip()
+                            if csv_digital_channel_preference in digital_channel_preference_mapping:
+                                customer_data[db_field] = digital_channel_preference_mapping[csv_digital_channel_preference]
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                customer_data[db_field] = csv_digital_channel_preference.upper().replace('-', '_')
+                        elif db_field == 'nationality':
+                            # Map CSV nationality to enum value
+                            csv_nationality = str(value).strip()
+                            logger.info(f"Processing nationality: '{csv_nationality}'")
+                            if csv_nationality in nationality_mapping:
+                                mapped_value = nationality_mapping[csv_nationality]
+                                logger.info(f"Mapped '{csv_nationality}' to '{mapped_value}'")
+                                customer_data[db_field] = mapped_value
+                            else:
+                                # If not found in mapping, try to use the value as-is (for enum values)
+                                fallback_value = csv_nationality.upper().replace('-', '_')
+                                logger.info(f"No mapping found for '{csv_nationality}', using fallback: '{fallback_value}'")
+                                customer_data[db_field] = fallback_value
+                        elif db_field in ['age', 'credit_score', 'account_tenure_months', 'number_of_children', 'digital_engagement_score', 'international_travel_frequency', 'already_has_products', 'do_not_need_products', 'recent_transactions', 'health_score', 'avg_days_abroad_per_year']:
+                            # Handle numeric fields
+                            try:
+                                if pd.isna(value):
+                                    logger.warning(f"Field '{db_field}' is NaN, setting to None")
+                                    customer_data[db_field] = None
+                                else:
+                                    customer_data[db_field] = int(value) if db_field in ['age', 'credit_score', 'account_tenure_months', 'number_of_children', 'digital_engagement_score', 'international_travel_frequency', 'already_has_products', 'do_not_need_products', 'recent_transactions', 'health_score', 'avg_days_abroad_per_year'] else float(value)
+                            except (ValueError, TypeError) as e:
+                                logger.error(f"Invalid value for numeric field '{db_field}': {value} - {str(e)}")
+                                raise ValueError(f"Invalid value for {db_field}: {value}")
+                        elif db_field in ['income_omr', 'monthly_groceries_spend', 'debt_to_income', 'property_value_omr', 'vehicle_value_omr', 'credit_utilization_pct']:
+                            # Handle float fields
+                            try:
+                                if pd.isna(value):
+                                    logger.warning(f"Field '{db_field}' is NaN, setting to None")
+                                    customer_data[db_field] = None
+                                else:
+                                    customer_data[db_field] = float(value)
+                            except (ValueError, TypeError) as e:
+                                logger.error(f"Invalid value for float field '{db_field}': {value} - {str(e)}")
+                                raise ValueError(f"Invalid value for {db_field}: {value}")
                         else:
                             customer_data[db_field] = value
                 
